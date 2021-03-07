@@ -1,0 +1,12 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+img {
+    position: relative;
+    width: 100px;
+    transform: rotateY(180deg);
+    transition: all 3s ease, transform .2s ease;
+}
