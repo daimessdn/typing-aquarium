@@ -40,9 +40,11 @@ const maxXpStats = document.querySelector("#max-xp-stats");
 // sounds library
 const fishEatenSound = new Audio("src/sounds/slurp.mp3");
 const fishAddedSound = new Audio("src/sounds/splash.mp3");
-// objects for localStorage
+const fishDiedSound = new Audio("src/sounds/bruh.mp3");
+// define local keys for localStorage
 const GAMESTATS_LOCAL_KEY = "aquarium.gamestats";
 const FISH_LOCAL_KEY = "aquarium.fish";
+// create game status for the first time
 if (!localStorage.getItem(GAMESTATS_LOCAL_KEY)) {
     localStorage.setItem(GAMESTATS_LOCAL_KEY, '{ "level": 1, "cash": 50, "xp": 1 }');
     localStorage.setItem(FISH_LOCAL_KEY, "[ ]");
@@ -56,11 +58,13 @@ class Game {
         this.level = stats.level;
         this.cash = stats.cash;
         this.xp = stats.xp;
+        this.isPaused = false;
         // determine max_xp for the next level
         this.max_xp = 10 + (5 * this.level * this.level);
-        // init'd two fish if not exists
-        console.log(this.fish);
+        // loaded fish from localStrorage
         const loaded = JSON.parse(localStorage.getItem(FISH_LOCAL_KEY));
+        // check if there is no fish in localStorage,
+        //// it will create two fish instead of load from localStorage
         if (loaded.length < 1) {
             this.fish.push(new Fish());
             this.fish.push(new Fish());
@@ -81,10 +85,14 @@ class Game {
     }
     // rendering updated stats of the game
     renderUpdateStats() {
+        // update stats to HTML
         levelStats.textContent = this.level.toString();
         cashStats.textContent = this.cash.toString();
         xpStats.textContent = this.xp.toString();
         maxXpStats.textContent = this.max_xp.toString();
+        // check fish which are not died
+        this.fish = this.fish.filter(fish => !fish.isDied);
+        // upload game and fish status to localStorage
         const stats = { level: this.level, cash: this.cash, xp: this.xp };
         localStorage.setItem(GAMESTATS_LOCAL_KEY, JSON.stringify(stats));
         localStorage.setItem(FISH_LOCAL_KEY, JSON.stringify(this.fish));
@@ -94,11 +102,14 @@ class Fish {
     // define fish in game
     constructor(id = "", img = fishType[Math.floor(Math.random() * fishType.length)], x = Math.floor(Math.random() * (document.body.clientWidth - 220)), y = Math.floor(Math.random() * (document.body.clientHeight - 150))) {
         this.wordToFeed = "";
+        this.id = makeid();
         this.img = img;
         this.x = x;
         this.y = y;
-        this.id = makeid();
+        // defined fish status
         this.isHungry = true;
+        this.isDied = false;
+        // load fish instance directly to HTML
         this.generateFish();
     }
     // rendered fish instance to HTML
@@ -129,6 +140,7 @@ class Fish {
         this.htmlFish.style.cssText = `
             position: relative; left: ${this.x}px;
                                 top: ${this.y}px;`;
+        // rotate fish turn left or turn right depends on position
         this.htmlFish.children[0].style.transform = previousPosition.x < this.x ?
             "rotateY(0deg)" : "rotateY(180deg)";
     }
@@ -136,13 +148,23 @@ class Fish {
     triggerHungry() {
         if (this.isHungry && this.wordToFeed === "") {
             this.wordToFeed = words[Math.floor(Math.random() * words.length)];
-            console.log(this);
+            // console.log(this);
             document.querySelector(`#word-${this.id}`).textContent = this.wordToFeed;
+            // 10 seconds deadline
+            //// else, the fish will die
+            setTimeout(() => {
+                if (this.isHungry && this.wordToFeed !== "") {
+                    console.log("your fish died!");
+                    fishDiedSound.play();
+                    this.isDied = true;
+                    document.querySelector(`#fish-${this.id}`).remove();
+                }
+            }, 10000);
         }
     }
 }
-console.log(localStorage.getItem(GAMESTATS_LOCAL_KEY));
-console.log(JSON.parse(localStorage.getItem(GAMESTATS_LOCAL_KEY)));
+// define a new game
+//// and also update game state
 const game = new Game(JSON.parse(localStorage.getItem(GAMESTATS_LOCAL_KEY)));
 game.renderUpdateStats();
 function makeid() {
@@ -154,16 +176,23 @@ function makeid() {
     }
     return result;
 }
+// trigger fish movement continuously
 setInterval(function () {
     game.fish.forEach(fishItem => {
         fishItem.moveFishInAquarium();
     });
 }, Math.floor(Math.random() * 10000));
+// watch progress of fish hunger
+//// only if the game is not paused
 setInterval(function () {
-    game.fish.forEach(fishItem => {
-        fishItem.triggerHungry();
-    });
+    if (!game.isPaused) {
+        game.fish.forEach(fishItem => {
+            fishItem.triggerHungry();
+        });
+    }
 }, Math.floor(50));
+// trigger feedInput
+//// this is where you can feed fish by keyboard input
 feedInput.addEventListener("input", () => {
     // get the hungry fish based on input value
     const getHungryFish = game.fish.filter(matchedFish => feedInput.value == matchedFish.wordToFeed);
@@ -177,27 +206,37 @@ feedInput.addEventListener("input", () => {
             game.xp += game.level;
             game.cash += 5;
             game.max_xp = 10 + (5 * game.level * game.level);
+            // wait 10 seconds again
+            //// to make fish hungry
             fishEatenSound.play();
             setTimeout(() => fish.isHungry = true, 10000 + (game.level * 100));
+            // check for level up
+            //// and update game stats
             game.validateLevelUp();
             game.renderUpdateStats();
             // clear input
             feedInput.value = "";
             document.querySelector(`#word-${fish.id}`).textContent = "";
         });
-        console.log(game);
+        // console.log(game);
     }
+    // instant clear input
+    //// using backspace key
     feedInput.addEventListener("keydown", (event) => {
         if (event.key === "Backspace") {
             feedInput.value = "";
         }
     });
 });
+// keyboard actions
+//// buy fish, backgrounds, and also quit the game
 document.addEventListener("keypress", (event) => {
+    // press 1 to buy the fish
     if (event.key == "1") {
         game.fish.push(new Fish());
         fishAddedSound.play();
         game.cash -= 100;
         game.renderUpdateStats();
+        feedInput.value = "";
     }
 });
