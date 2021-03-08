@@ -31,6 +31,12 @@ const words = [
     "flameshot", "okonomiyaki", "elixir", "history", "hoisting", "daosd", "pudxqa", "sdfop", "ingpd", "sploit",
     "spotify", "premium", "sponteneus"
 ];
+// define HTML 
+const feedInput = document.querySelector("#feeding-keyboard");
+const levelStats = document.querySelector("#level-stats");
+const cashStats = document.querySelector("#cash-stats");
+const xpStats = document.querySelector("#xp-stats");
+const maxXpStats = document.querySelector("#max-xp-stats");
 // sounds library
 const fishEatenSound = new Audio("src/sounds/slurp.mp3");
 class Game {
@@ -55,6 +61,12 @@ class Game {
             this.level += 1;
             this.xp -= this.max_xp;
         }
+    }
+    renderUpdateStats() {
+        levelStats.textContent = this.level.toString();
+        cashStats.textContent = this.cash.toString();
+        xpStats.textContent = this.xp.toString();
+        maxXpStats.textContent = this.max_xp.toString();
     }
 }
 class Fish {
@@ -106,7 +118,7 @@ class Fish {
         if (this.isHungry && this.wordToFeed === "") {
             this.wordToFeed = words[Math.floor(Math.random() * words.length)];
             console.log(this);
-            document.querySelector(`#word-${this.id}`).innerHTML = this.wordToFeed;
+            document.querySelector(`#word-${this.id}`).textContent = this.wordToFeed;
         }
     }
 }
@@ -120,6 +132,7 @@ function makeid() {
     return result;
 }
 const game = new Game();
+game.renderUpdateStats();
 setInterval(function () {
     game.fish.forEach(fishItem => {
         fishItem.moveFishInAquarium();
@@ -130,7 +143,6 @@ setInterval(function () {
         fishItem.triggerHungry();
     });
 }, Math.floor(50));
-const feedInput = document.querySelector("#feeding-keyboard");
 feedInput.addEventListener("input", () => {
     // get the hungry fish based on input value
     const getHungryFish = game.fish.filter(matchedFish => feedInput.value == matchedFish.wordToFeed);
@@ -147,9 +159,10 @@ feedInput.addEventListener("input", () => {
             fishEatenSound.play();
             setTimeout(() => fish.isHungry = true, 10000 + (game.level * 100));
             game.validateLevelUp();
+            game.renderUpdateStats();
             // clear input
             feedInput.value = "";
-            document.querySelector(`#word-${fish.id}`).innerHTML = "";
+            document.querySelector(`#word-${fish.id}`).textContent = "";
         });
         console.log(game);
     }

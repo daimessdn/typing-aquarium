@@ -32,6 +32,13 @@ const words: string[] = [
     "spotify", "premium", "sponteneus"
 ];
 
+// define HTML 
+const feedInput = document.querySelector("#feeding-keyboard")! as HTMLInputElement;
+const levelStats = document.querySelector("#level-stats")!;
+const cashStats = document.querySelector("#cash-stats")!;
+const xpStats = document.querySelector("#xp-stats")!;
+const maxXpStats = document.querySelector("#max-xp-stats")!;
+
 // sounds library
 const fishEatenSound = new Audio("src/sounds/slurp.mp3");
 
@@ -64,7 +71,14 @@ class Game {
             this.level += 1;
             this.xp -= this.max_xp;
         }
-    }    
+    }
+
+    renderUpdateStats() {
+        levelStats.textContent = this.level.toString();
+        cashStats.textContent = this.cash.toString();
+        xpStats.textContent = this.xp.toString();
+        maxXpStats.textContent = this.max_xp.toString();
+    }
 }
 
 class Fish {
@@ -134,7 +148,7 @@ class Fish {
            this.wordToFeed = words[Math.floor(Math.random() * words.length)];
            console.log(this);
 
-           document.querySelector(`#word-${this.id}`)!.innerHTML = this.wordToFeed;
+           document.querySelector(`#word-${this.id}`)!.textContent = this.wordToFeed;
         }
     }
 }
@@ -150,6 +164,7 @@ function makeid() {
 }
 
 const game = new Game();
+game.renderUpdateStats();
 
 setInterval(function() {
     game.fish.forEach(fishItem => {
@@ -163,7 +178,6 @@ setInterval(function() {
     });
 }, Math.floor(50));
 
-const feedInput = document.querySelector("#feeding-keyboard")! as HTMLInputElement;
 
 feedInput.addEventListener("input", () => {
     // get the hungry fish based on input value
@@ -185,10 +199,11 @@ feedInput.addEventListener("input", () => {
             setTimeout(() => fish.isHungry = true, 10000 + (game.level * 100));
 
             game.validateLevelUp();
+            game.renderUpdateStats();
 
             // clear input
             feedInput.value = "";
-            document.querySelector(`#word-${fish.id}`)!.innerHTML = "";
+            document.querySelector(`#word-${fish.id}`)!.textContent = "";
         });
 
         console.log(game);
