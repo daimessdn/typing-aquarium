@@ -19,7 +19,7 @@ const words: string[] = [
     "venlam", "blanditiis", "iusto", "malorum", "autem", "fuga", "chiton", "omnis", "vivipar", "fakear",
     "anuum", "oleum", "hirata", "onyx", "vaporeon", "kirlia", "charmeleon", "saulus", "quam", "wocher",
     "jahre", "alt", "vierzehn", "zwanzig", "winters", "portfolio", "suburban", "manhattan", "pizza", "assuming",
-    "pollka", "zigizaga", "aluminuium", "foramens", "only", "manganese", "molybdenum", "legume", "benzene",
+    "pollka", "zigizaga", "alumunium", "foramens", "only", "manganese", "molybdenum", "legume", "benzene",
     "birch", "rattata", "thunderbolt", "gitignore", "boltcutter", "lockpick", "deutschland", "impromptu",
     "minute", "minuet", "sprach", "cheveux", "cheguavera", "chevaleresque", "burgmuller", "oblivion",
     "prego", "watashi", "tangwroth", "tormentor", "staryu", "kuriboh", "turtwig", "piplup", "staravia",
@@ -32,7 +32,7 @@ const words: string[] = [
     "spotify", "premium", "sponteneus"
 ];
 
-// define HTML 
+// define HTML DOM interface
 const feedInput = document.querySelector("#feeding-keyboard")! as HTMLInputElement;
 const levelStats = document.querySelector("#level-stats")!;
 const cashStats = document.querySelector("#cash-stats")!;
@@ -41,6 +41,16 @@ const maxXpStats = document.querySelector("#max-xp-stats")!;
 
 // sounds library
 const fishEatenSound = new Audio("src/sounds/slurp.mp3");
+const fishAddedSound = new Audio("src/sounds/splash.mp3");
+
+// objects for localStorage
+const GAMESTATS_LOCAL_KEY = "aquarium.gamestats";
+const FISH_LOCAL_KEY = "aquarium.fish";
+
+if (!localStorage.getItem(GAMESTATS_LOCAL_KEY)) {
+    localStorage.setItem(GAMESTATS_LOCAL_KEY, '{ "level": 1, "cash": 50, "xp": 1 }');
+    localStorage.setItem(FISH_LOCAL_KEY, "[ ]");
+}
 
 class Game {
     // init'd stats
@@ -51,7 +61,9 @@ class Game {
 
     // define initial game stats
     //// starter will have level 1, 50 cash, and xp point 1
-    constructor(stats: { level: number; cash: number; xp: number } = { level: 1, cash: 50, xp: 1 }) {
+    constructor(stats: { level: number;
+                         cash: number;
+                         xp: number } = { level: 1, cash: 50, xp: 1 }) {
         this.level = stats.level;
         this.cash = stats.cash;
         this.xp = stats.xp;
@@ -59,9 +71,19 @@ class Game {
         // determine max_xp for the next level
         this.max_xp = 10 + (5 * this.level * this.level);
 
-        // init'd two fish
-        this.fish.push(new Fish());
-        this.fish.push(new Fish());
+        // init'd two fish if not exists
+        console.log(this.fish);
+
+        const loaded = JSON.parse(localStorage.getItem(FISH_LOCAL_KEY)!);
+
+        if (loaded.length < 1) {
+            this.fish.push(new Fish());
+            this.fish.push(new Fish());
+        } else {
+            loaded.forEach((loadedFish: { id: string | undefined; img: string | undefined; x: number | undefined; y: number | undefined; }) => {
+                this.fish.push(new Fish(loadedFish.id, loadedFish.img, loadedFish.x, loadedFish.y));
+            })
+        }
     }
 
     // in case of game level up
@@ -73,23 +95,30 @@ class Game {
         }
     }
 
+    // rendering updated stats of the game
     renderUpdateStats() {
         levelStats.textContent = this.level.toString();
         cashStats.textContent = this.cash.toString();
         xpStats.textContent = this.xp.toString();
         maxXpStats.textContent = this.max_xp.toString();
+
+        const stats = { level: this.level, cash: this.cash, xp: this.xp }
+
+        localStorage.setItem(GAMESTATS_LOCAL_KEY, JSON.stringify(stats));
+        localStorage.setItem(FISH_LOCAL_KEY, JSON.stringify(this.fish));
     }
 }
 
 class Fish {
     // init'd fish properties
-    id: string = ""; img: string; x: number; y: number; htmlFish: any;
+    id: string; img: string; x: number; y: number; htmlFish: any;
     
     // init'd fish status
     isHungry: boolean; wordToFeed: string = "";
 
     // define fish in game
-    constructor(img: string = fishType[Math.floor(Math.random() * fishType.length)],
+    constructor(id: string = "",
+                img: string = fishType[Math.floor(Math.random() * fishType.length)],
                 x = Math.floor(Math.random() * (document.body.clientWidth - 220)),
                 y = Math.floor(Math.random() * (document.body.clientHeight - 150))) {
         this.img = img;
@@ -153,6 +182,11 @@ class Fish {
     }
 }
 
+console.log(localStorage.getItem(GAMESTATS_LOCAL_KEY)!);
+console.log(JSON.parse(localStorage.getItem(GAMESTATS_LOCAL_KEY)!));
+const game = new Game(JSON.parse(localStorage.getItem(GAMESTATS_LOCAL_KEY)!));
+game.renderUpdateStats();
+
 function makeid() {
    var result           = '';
    var characters       = '0123456789abcdef';
@@ -163,8 +197,6 @@ function makeid() {
    return result;
 }
 
-const game = new Game();
-game.renderUpdateStats();
 
 setInterval(function() {
     game.fish.forEach(fishItem => {
