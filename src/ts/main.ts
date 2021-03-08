@@ -3,11 +3,43 @@ const fishType: string[] = ["fish1.svg", "fish2.svg", "fish3.svg", "fish4.svg",
                             "fish5.svg", "fish6.svg", "fish7.svg", "fish8.svg",
                             "fish9.svg", "fish10.svg", "fish11.svg"];
 
+// define words list
+const words: string[] = [
+    "a", "alaba", "uza", "palab", "eraj", "paleka", "oi", "mawq", "zhuag", "xapve",
+    "eps", "acosin", "phirz", "mcdeltat", "vavi", "rhob", "los", "knho", "force", "brani", "ganaram",
+    "zitishen", "iqnd", "polygon", "namm", "mintbean", "io", "oryza", "yamz", "javascript", "feedme",
+    "iamhungry", "iwantu", "wantfood", "chainfood", "sunday", "posix", "three", "omega", "zxcv", "dvorak",
+    "whoami", "whatis", "sudo", "beautiful", "nospace", "corona", "savannah", "kasakuyan", "rusuto",
+    "mosura", "endomu", "hambamuyan", "xyz", "azula", "genji", "lossky", "walker", "capsicum", "helloworld",
+    "tsc", "daimessdn", "staysafe", "covidline", "donotcross", "wearmask", "parampaa", "lorem", "ipsum",
+    "dolor", "sit", "amet", "requirem", "gojira", "randa", "kasaku", "yanmu", "dongan", "takeshi",
+    "canuck", "eh", "freezie", "gitrdone", "giver", "habs", "hoser", "keener", "mickey", "parkade", "pop",
+    "poutine", "rinkrat", "thepeg", "timbits", "toque", "washroom", "amazon", "wellerman", "argules", "runners",
+    "darts", "gelay", "anjay", "azure", "eier", "spacex", "caribou", "aqua", "typewriter", "elusmod", "tempor",
+    "venlam", "blanditiis", "iusto", "malorum", "autem", "fuga", "chiton", "omnis", "vivipar", "fakear",
+    "anuum", "oleum", "hirata", "onyx", "vaporeon", "kirlia", "charmeleon", "saulus", "quam", "wocher",
+    "jahre", "alt", "vierzehn", "zwanzig", "winters", "portfolio", "suburban", "manhattan", "pizza", "assuming",
+    "pollka", "zigizaga", "aluminuium", "foramens", "only", "manganese", "molybdenum", "legume", "benzene",
+    "birch", "rattata", "thunderbolt", "gitignore", "boltcutter", "lockpick", "deutschland", "impromptu",
+    "minute", "minuet", "sprach", "cheveux", "cheguavera", "chevaleresque", "burgmuller", "oblivion",
+    "prego", "watashi", "tangwroth", "tormentor", "staryu", "kuriboh", "turtwig", "piplup", "staravia",
+    "bibarel", "golduck", "stringify", "burneary", "trias", "quarter", "arabesque", "gracieuse", "pastorale",
+    "piazzas", "zelda", "adawong", "styrienne", "plainte", "chatterbox", "defunte", "infante", "pavine",
+    "campnella", "chateau", "plateau", "penumbra", "amplitude", "longitude", "molybdenum", "leguminosum",
+    "bombyxmorii", "versicolor", "virginica", "turing", "blobfish", "dumbo", "angler", "barrelfish",
+    "iguana", "madagaskar", "pavalzar", "zimbabwe", "lvndscape", "dranchuk", "fsck", "nomodeset", "evince",
+    "flameshot", "okonomiyaki", "elixir", "history", "hoisting", "daosd", "pudxqa", "sdfop", "ingpd", "sploit",
+    "spotify", "premium", "sponteneus"
+];
+
+// sounds library
+const fishEatenSound = new Audio("src/sounds/slurp.mp3");
+
 class Game {
     // init'd stats
     level: number; cash: number; xp: number; max_xp: number;
 
-    // // init'd fish collections in auarium
+    // // init'd fish collections in aquarium
     fish: Fish[] = [];
 
     // define initial game stats
@@ -26,7 +58,7 @@ class Game {
     }
 
     // in case of game level up
-    levelUp() {
+    validateLevelUp() {
         // validating the XP to level up
         if (this.xp >= this.max_xp) {
             this.level += 1;
@@ -58,13 +90,21 @@ class Fish {
 
     // rendered fish instance to HTML
     generateFish() {
-        this.htmlFish = document.createElement("img");
-        this.htmlFish.src = `src/img/${this.img}`;
-        this.htmlFish.id = this.id;
+        this.htmlFish = document.createElement("figure");
+        this.htmlFish.id = `fish-${this.id}`;
         this.htmlFish.style.cssText = `
             position: relative; left: ${this.x}px;
                                 top: ${this.y}px;
         `;
+        
+        const img = document.createElement("img");
+        img.src = `src/img/fish/${this.img}`;
+
+        const feedCaption = document.createElement("figcaption");
+        feedCaption.id = `word-${this.id}`;
+
+        this.htmlFish.appendChild(img);
+        this.htmlFish.appendChild(feedCaption);
 
         document.querySelector("#aquarium")!.appendChild(this.htmlFish);
     }
@@ -84,7 +124,7 @@ class Fish {
             position: relative; left: ${this.x}px;
                                 top: ${this.y}px;`;
     
-        this.htmlFish.style.transform = previousPosition.x < this.x ?
+        this.htmlFish.children[0].style.transform = previousPosition.x < this.x ?
                                         "rotateY(0deg)" : "rotateY(180deg)";
     }
 
@@ -93,6 +133,8 @@ class Fish {
         if (this.isHungry && this.wordToFeed === "") {
            this.wordToFeed = words[Math.floor(Math.random() * words.length)];
            console.log(this);
+
+           document.querySelector(`#word-${this.id}`)!.innerHTML = this.wordToFeed;
         }
     }
 }
@@ -123,7 +165,7 @@ setInterval(function() {
 
 const feedInput = document.querySelector("#feeding-keyboard")! as HTMLInputElement;
 
-feedInput.addEventListener("input", (event) => {
+feedInput.addEventListener("input", () => {
     // get the hungry fish based on input value
     const getHungryFish = game.fish.filter(matchedFish => 
         feedInput.value == matchedFish.wordToFeed
@@ -138,14 +180,23 @@ feedInput.addEventListener("input", (event) => {
             game.xp += game.level; game.cash += 5;
             game.max_xp = 10 + (5 * game.level * game.level);
 
-            setTimeout(() => fish.isHungry = true, 10000);
+            fishEatenSound.play();
 
-            game.levelUp();
+            setTimeout(() => fish.isHungry = true, 10000 + (game.level * 100));
+
+            game.validateLevelUp();
 
             // clear input
             feedInput.value = "";
+            document.querySelector(`#word-${fish.id}`)!.innerHTML = "";
         });
 
         console.log(game);
     }
+
+    feedInput.addEventListener("keydown", (event) => {
+        if (event.key === "Backspace") {
+            feedInput.value = "";
+        }
+    })
 })
