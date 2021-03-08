@@ -245,5 +245,16 @@ feedInput.addEventListener("input", () => {
         if (event.key === "Backspace") {
             feedInput.value = "";
         }
-    })
-})
+    });
+});
+
+document.addEventListener("keypress", (event) => {
+    if (event.key == "1") {
+        game.fish.push(new Fish());
+        fishAddedSound.play();
+
+        game.cash -= 100;
+
+        game.renderUpdateStats();
+    } 
+});
