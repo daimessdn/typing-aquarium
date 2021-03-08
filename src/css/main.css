@@ -2,6 +2,7 @@
 
 *, input, button {
     font-family: "Rubik", sans-serif;
+    user-select: none;
 }
 
 html, body {
@@ -40,7 +41,7 @@ figure {
     display: flex;
     flex-direction: column;
     margin: 0;
-    position: relative;
+    position: absolute;
     transition: all 3s ease;
     align-items: center;
 }

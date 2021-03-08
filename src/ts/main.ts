@@ -96,8 +96,14 @@ class Game {
             this.fish.push(new Fish());
             this.fish.push(new Fish());
         } else {
-            loaded.forEach((loadedFish: { id: string | undefined; img: string | undefined; x: number | undefined; y: number | undefined; }) => {
-                this.fish.push(new Fish(loadedFish.id, loadedFish.img, loadedFish.x, loadedFish.y));
+            loaded.forEach((loadedFish: { id: string |undefined;
+                                          img: string | undefined;
+                                          x: number | undefined; y: number | undefined;
+                                          hungerTimer: number| undefined }) => {
+                this.fish.push(new Fish(loadedFish.id,
+                                        loadedFish.img,
+                                        loadedFish.x, loadedFish.y,
+                                        loadedFish.hungerTimer));
             });
         }
     }
@@ -140,8 +146,9 @@ class Fish {
     // define fish in game
     constructor(id: string = "",
                 img: string = fishType[Math.floor(Math.random() * fishType.length)],
-                x = Math.floor(Math.random() * (document.body.clientWidth - 220)),
-                y = Math.floor(Math.random() * (document.body.clientHeight - 150))) {
+                x: number = Math.floor(Math.random() * (document.body.clientWidth - 220)),
+                y: number = Math.floor(Math.random() * (document.body.clientHeight - 150)),
+                hungerTimer:number = 11) {
 
         this.id = makeid();
         this.img = img;
@@ -151,7 +158,7 @@ class Fish {
         // defined fish status
         this.isHungry = true;
         this.isDied = false;
-        this.hungerTimer = 11;
+        this.hungerTimer = hungerTimer;
         
         // load fish instance directly to HTML
         this.generateFish();
@@ -168,6 +175,7 @@ class Fish {
         
         const img = document.createElement("img");
         img.src = `src/img/fish/${this.img}`;
+        img.draggable = false;
 
         const feedCaption = document.createElement("figcaption");
         feedCaption.id = `word-${this.id}`;
@@ -200,37 +208,19 @@ class Fish {
 
     // generate word to feed the fish (if the fish hungry)
     triggerHungry() {
-        if (this.isHungry && this.wordToFeed === "") {
-           this.wordToFeed = words[Math.floor(Math.random() * words.length)];
-           // console.log(this);
-
-           document.querySelector(`#word-${this.id}`)!.textContent = this.wordToFeed;
-
-           // 10 seconds deadline
-           //// else, the fish will die
-            let countDown = setInterval(() => {
-				if (this.hungerTimer < 0) {
-					console.log("your fish died!");
-					fishDiedSound.play();
-
-                    this.isDied = true;
-                    this.isHungry = false;
-                    
-                    clearInterval(countDown);
-                    this.triggerDie();
-				} else {
-                    if (!game.isPaused) {
-                        this.hungerTimer--;
-                        // console.log(this.hungerTimer);
-                    }
-
-                    if (!this.isHungry) { clearInterval(countDown); }
-                }
-           }, 1000);
+        if (this.hungerTimer <= 10 && this.wordToFeed === "") {
+            this.wordToFeed = words[Math.floor(Math.random() * words.length)];
+            document.querySelector(`#word-${this.id}`)!.textContent = this.wordToFeed;
         }
     }
-
+    
     triggerDie() {
+        console.log("your fish died!");
+        fishDiedSound.play();
+    
+        this.isDied = true;
+        this.isHungry = false;
+        
         document.querySelector(`#fish-${this.id}`)!.remove();
     }
 }
@@ -257,15 +247,24 @@ const triggerFishMovement = setInterval(function() {
     });
 }, Math.floor(Math.random() * 10000));
 
-// watch progress of fish hunger
-//// only if the game is not paused
-const triggerFishHunger = setInterval(function() {
+// trigger hunger countdown
+const triggerCountdown = setInterval(function() {
     if (!game.isPaused) {
         game.fish.forEach(fishItem => {
+            fishItem.hungerTimer -= 1;
             fishItem.triggerHungry();
+
+            // makes the fish die
+            //// if times out
+            if(fishItem.hungerTimer < 0) {
+                fishItem.triggerDie();
+            }
+
+            game.renderUpdateStats();
         });
     }
-}, Math.floor(50));
+}, 1000);
+
 
 // trigger feedInput
 //// this is where you can feed fish by keyboard input
@@ -280,7 +279,7 @@ feedInput.addEventListener("input", () => {
     //// and proceed the game reward (XP increased and cash increased)
     if (getHungryFish.length > 0) {
         getHungryFish.forEach(fish => {
-            fish.isHungry = false; fish.wordToFeed = ""; fish.hungerTimer = 10;
+            fish.isHungry = false; fish.wordToFeed = ""; fish.hungerTimer = 20;
             game.xp += game.level; game.cash += 5;
             game.max_xp = 10 + (5 * game.level * game.level);
 
@@ -304,8 +303,7 @@ feedInput.addEventListener("input", () => {
     // instant clear input
     //// using backspace key
     feedInput.addEventListener("keydown", (event) => {
-        if (event.key === "Backspace" ||
-            event.key === "1") {
+        if (event.key === "Backspace") {
             feedInput.value = "";
         }
     });
@@ -318,10 +316,11 @@ document.addEventListener("keydown", (event) => {
     //// as long as the game is not paused
     if (event.key === "1") {
         if (game.isPaused === false) {
-            game.fish.push(new Fish());
-            fishAddedSound.play();
-        
-            if (game.cash <= 100) {
+            if (game.cash >= 100) {
+                game.fish.push(new Fish());
+                fishAddedSound.play();
+                triggerNotification("You bought a new fish. Take care of it.", "");
+
                 game.cash -= 100;
                 game.renderUpdateStats();
             } else {
@@ -335,13 +334,13 @@ document.addEventListener("keydown", (event) => {
         }
     } else if (event.key === "2") {
         if (game.isPaused === false) {
-            tankAddedSound.play();
-        
-            if (game.cash <= 1000) {
-                game.cash -= 100;
-                game.renderUpdateStats();
+            if (game.cash >= 1000) {
+                tankAddedSound.play();
+                triggerNotification("Congratulations! You've bought a new background! Your fish must be love it.", "");
+                // game.cash -= 100;
+                // game.renderUpdateStats();
             } else {
-                triggerNotification("Your money is not enough to buy a background", "");
+                triggerNotification("Your money is not enough to buy a background!", "");
             }
         
             feedInput.value = "";
@@ -359,10 +358,17 @@ document.addEventListener("keydown", (event) => {
         gameHelper.style.display = gameHelper.style.display === "block" ? "none" : "block";
     }
 
+    feedInput.value = feedInput.value.replace(/[0-9]\?/, "");
     feedInput.focus();
 });
 
 function triggerNotification(text: string, finalText: string) {
-    gameNotification.textContent = "You cannot buy a fish in paused mode!";
-    setTimeout(() => { gameNotification.textContent = "Game paused"; }, 5000);
+    gameNotification.textContent = text;
+    setTimeout(() => { gameNotification.textContent = finalText; }, 5000);
+}
+
+window.onclick = () => {
+    if (document.activeElement !== feedInput) {
+        feedInput.focus();
+    }
 }
