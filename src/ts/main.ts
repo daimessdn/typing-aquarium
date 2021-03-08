@@ -266,6 +266,7 @@ const triggerCountdown = setInterval(function() {
             //// if times out
             if(fishItem.hungerTimer < 0) {
                 fishItem.triggerDie();
+                triggerNotification("Oh, no! Your fish is died!", "");
             }
 
             game.renderUpdateStats();
@@ -373,17 +374,18 @@ document.addEventListener("keydown", (event) => {
                                               fishTanks[aquariumIteration % fishTanks.length]
                                           }.svg")`;
     } else if (event.key === "Escape") {
-        game.isPaused = game.isPaused ? false : true;
-        // console.log("game pause/not paused.");
-
-        feedInput.disabled = game.isPaused ? true : false;
-        gameNotification.textContent = game.isPaused ? "Game paused" : "";
+        pauseGame();
     } else if (event.key === "?") {
         gameHelper.style.display = gameHelper.style.display === "block" ? "none" : "block";
+    } else if (event.key === "`") {
+        if (!game.isPaused) {
+            pauseGame();
+        }
+        
+        window.open("https://forms.gle/U7JF7tA9QbrA5Mjy6", "_blank");
     }
 
-    feedInput.value = feedInput.value.replace(/[0-9]\?/, "");
-    feedInput.focus();
+    document.body.click();
 });
 
 function triggerNotification(text: string, finalText: string) {
@@ -395,4 +397,12 @@ window.onclick = () => {
     if (document.activeElement !== feedInput) {
         feedInput.focus();
     }
+}
+
+function pauseGame() {
+    game.isPaused = game.isPaused ? false : true;
+    // console.log("game pause/not paused.");
+
+    feedInput.disabled = game.isPaused ? true : false;
+    gameNotification.textContent = game.isPaused ? "Game paused" : "";
 }
