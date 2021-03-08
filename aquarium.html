@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Aquarium</title>
+
+    <link rel="stylesheet" href="src/css/aquarium.css" />
+</head>
+<body>
+    <div id="stats">
+        <span class="stats-label">LEVEL</span>
+        <h1 id="level-stats">-999</h1>
+
+        <span class="stats-label">CASH</span>
+        <h2 id="cash-stats"></h2>
+
+        <span class="stats-label">XP</span>
+        <div>
+            <h2 id="xp-stats"></h2>
+            <h2>/</h2>
+            <h2 id="max-xp-stats"></h2>
+        </div>
+    </div>
+
+    <h3 id="game-notification"></h3>
+
+    <h3 id="game-helper">
+        <kbd>1</kbd>buy a fish ($100)<br />
+        <kbd>2</kbd>buy a background ($100)<br />
+        <kbd>esc</kbd>toggle pause mode<br />
+        <kbd>shift</kbd> + <kbd>/</kbd>toggle help<br />
+        <kbd>0</kbd>switch background<br />
+        <kbd>`</kbd>give us feedback<br />
+    </h3>
+
+    <div id="aquarium"></div>
+    <input type="text" id="feeding-keyboard" placeholder="Type here to feed" autofocus />
+    
+    <script src="src/js/main.js"></script>
+</body>
+</html>

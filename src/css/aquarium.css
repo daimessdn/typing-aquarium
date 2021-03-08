@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;600&display=swap');
+
+*, input, button {
+    font-family: "Rubik", sans-serif;
+    user-select: none;
+}
+
+html, body {
+    font-family: "Rubik", sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+#stats {
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    color: rgba(0, 0, 0, .3);
+
+    transition: all .3s ease;
+}
+
+#stats * {
+    margin: 0;
+}
+
+#stats:hover {
+    color:rgba(0, 0, 0, 1);
+}
+
+#stats div * {
+    display: inline-block;
+}
+
+#aquarium {
+    background-image: linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.2)),
+                      url("../img/aquariums/aquarium1.svg");
+    background-size: cover;
+    background-position: bottom;
+    height: 100%;
+}
+
+figure {
+    width: 100px;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    position: absolute;
+    transition: all 3s ease;
+    align-items: center;
+}
+
+figure img {
+    width: 100px;
+    align-self: center;
+    transform: rotateY(180deg);
+    transition: transform .2s ease;
+}
+
+figcaption {
+    background-color: #f17d6f;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.5em;
+    position: absolute;
+}
+
+#feeding-keyboard {
+    background: none;
+    border: none;
+    outline: none;
+
+    font-weight: bold;
+    font-size: 2em;
+
+    width: 300px;
+    position: fixed;
+    bottom: 8px;
+    left: 50%;
+    margin-left: -150px;
+}
+
+#game-notification {
+    position: fixed;
+    color: rgba(0, 0, 0, .3);
+    margin: 0;
+    left: 50%;
+    bottom: calc(16px + 2em);
+    width: 500px;
+    text-align: center;
+    margin-left: -250px;
+}
+
+#game-helper {
+    position: fixed;
+    font-weight: normal;
+    color: rgba(0, 0, 0, .3);
+    line-height: 1.7;
+    margin: 0;
+    right: 8px;
+    top: 8px;
+    width: 300px;
+    text-align: right;
+    display: "block";
+    transition: all .3s ease;
+}
+
+#game-helper:hover {
+    color:rgba(0, 0, 0, 1);
+}
+
+#game-helper kbd {
+    padding: 2px;
+    margin-right: 10px;
+    font-weight: bold;
+    border: 1px solid rgba(0, 0, 0, .3);
+    border-radius: 4px;
+}
