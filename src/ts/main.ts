@@ -29,7 +29,7 @@ const words: string[] = [
     "bombyxmorii", "versicolor", "virginica", "turing", "blobfish", "dumbo", "angler", "barrelfish",
     "iguana", "madagaskar", "pavalzar", "zimbabwe", "lvndscape", "dranchuk", "fsck", "nomodeset", "evince",
     "flameshot", "okonomiyaki", "elixir", "history", "hoisting", "daosd", "pudxqa", "sdfop", "ingpd", "sploit",
-    "spotify", "premium", "spontaneus", "snowmode", "hiddenspace", "copywriting", "copyright", "gksudo", "ifconfig",
+    "spotify", "premium", "spontaneous", "snowmode", "hiddenspace", "copywriting", "copyright", "gksudo", "ifconfig",
     "vscode", "vaccine", "zusammen", "arbeite", "bureaucracy", "onomatopoeia", "occurence", "maneuver", 
     "alveolus", "massachusetts", "sweetscar", "cardigan", "oscillator", "scenegraph", "district",
     "camouflage", "nefarious", "hegemony", "matsutake", "cellulla", "pseudomonas", "shutdown", "jinzo", "ushioni",
@@ -41,13 +41,14 @@ const words: string[] = [
 ];
 
 // define HTML DOM interface
+const aquarium = document.querySelector("#aquarium")! as HTMLElement;
 const feedInput = document.querySelector("#feeding-keyboard")! as HTMLInputElement;
-const levelStats = document.querySelector("#level-stats")!;
-const cashStats = document.querySelector("#cash-stats")!;
-const xpStats = document.querySelector("#xp-stats")!;
-const maxXpStats = document.querySelector("#max-xp-stats")!;
-const gameNotification = document.querySelector("#game-notification")!;
-const gameHelper = document.querySelector("#game-helper")!;
+const levelStats = document.querySelector("#level-stats")! as HTMLElement;
+const cashStats = document.querySelector("#cash-stats")! as HTMLElement;
+const xpStats = document.querySelector("#xp-stats")! as HTMLElement;
+const maxXpStats = document.querySelector("#max-xp-stats")! as HTMLElement;
+const gameNotification = document.querySelector("#game-notification")! as HTMLElement;
+const gameHelper = document.querySelector("#game-helper")! as HTMLElement;
 
 // sounds library
 const fishEatenSound = new Audio("src/sounds/slurp.mp3");
@@ -58,12 +59,18 @@ const tankAddedSound = new Audio("src/sounds/wow.mp3");
 // define local keys for localStorage
 const GAMESTATS_LOCAL_KEY = "aquarium.gamestats";
 const FISH_LOCAL_KEY = "aquarium.fish";
+const TANKS_LOCAL_KEY = "aquarium.tanks";
 
 // create game status for the first time
 if (!localStorage.getItem(GAMESTATS_LOCAL_KEY)) {
     localStorage.setItem(GAMESTATS_LOCAL_KEY, '{ "level": 1, "cash": 50, "xp": 1 }');
     localStorage.setItem(FISH_LOCAL_KEY, "[ ]");
+    localStorage.setItem(TANKS_LOCAL_KEY, "['aquarium1']");
 }
+
+// other variables
+const fishTanks = JSON.parse(localStorage.getItem(TANKS_LOCAL_KEY)!);
+let aquariumIteration = 0;
 
 class Game {
     // init'd stats
@@ -132,6 +139,7 @@ class Game {
         const stats = { level: this.level, cash: this.cash, xp: this.xp }
         localStorage.setItem(GAMESTATS_LOCAL_KEY, JSON.stringify(stats));
         localStorage.setItem(FISH_LOCAL_KEY, JSON.stringify(this.fish));
+        localStorage.setItem(TANKS_LOCAL_KEY, JSON.stringify(fishTanks));
     }
 }
 
@@ -147,7 +155,7 @@ class Fish {
     constructor(id: string = "",
                 img: string = fishType[Math.floor(Math.random() * fishType.length)],
                 x: number = Math.floor(Math.random() * (document.body.clientWidth - 220)),
-                y: number = Math.floor(Math.random() * (document.body.clientHeight - 150)),
+                y: number = Math.floor(Math.random() * (document.body.clientHeight - 200)),
                 hungerTimer:number = 11) {
 
         this.id = makeid();
@@ -189,7 +197,7 @@ class Fish {
     // change position of the fish
     changePosition() {
         this.x = Math.floor(Math.random() * (document.body.clientWidth - 220));
-        this.y = Math.floor(Math.random() * (document.body.clientHeight - 150));
+        this.y = Math.floor(Math.random() * (document.body.clientHeight - 200));
     }
 
     // trigger HTML to move fish
@@ -334,11 +342,21 @@ document.addEventListener("keydown", (event) => {
         }
     } else if (event.key === "2") {
         if (game.isPaused === false) {
-            if (game.cash >= 1000) {
+            if (game.cash >= 1000 && !fishTanks.includes("aquarium2")) {
+                fishTanks.push("aquarium2");
+
                 tankAddedSound.play();
                 triggerNotification("Congratulations! You've bought a new background! Your fish must be love it.", "");
-                // game.cash -= 100;
-                // game.renderUpdateStats();
+                
+                aquariumIteration += 1;
+                aquarium.style.backgroundImage = `linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.2)),
+                                                  url("src/img/aquariums/${
+                                                      fishTanks[aquariumIteration % fishTanks.length]
+                                                  }.svg")`;
+                game.cash -= 1000;
+                game.renderUpdateStats();
+            } else if (fishTanks.includes("aquarium2")) {
+                triggerNotification("You have already bought a background!", "");
             } else {
                 triggerNotification("Your money is not enough to buy a background!", "");
             }
@@ -348,6 +366,12 @@ document.addEventListener("keydown", (event) => {
             triggerNotification("You cannot buy a background in paused mode!",
                                 "Game paused");
         }
+    } else if (event.key === "0") {
+        aquariumIteration += 1;
+        aquarium.style.backgroundImage = `linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.2)),
+                                          url("src/img/aquariums/${
+                                              fishTanks[aquariumIteration % fishTanks.length]
+                                          }.svg")`;
     } else if (event.key === "Escape") {
         game.isPaused = game.isPaused ? false : true;
         // console.log("game pause/not paused.");
