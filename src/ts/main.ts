@@ -47,6 +47,7 @@ const cashStats = document.querySelector("#cash-stats")!;
 const xpStats = document.querySelector("#xp-stats")!;
 const maxXpStats = document.querySelector("#max-xp-stats")!;
 const gameNotification = document.querySelector("#game-notification")!;
+const gameHelper = document.querySelector("#game-helper")!;
 
 // sounds library
 const fishEatenSound = new Audio("src/sounds/slurp.mp3");
@@ -324,7 +325,7 @@ document.addEventListener("keydown", (event) => {
                 game.cash -= 100;
                 game.renderUpdateStats();
             } else {
-                triggerNotification("Your money is not enough to buy a fish", "");
+                triggerNotification("Your money is not enough to buy a fish!", "");
             }
         
             feedInput.value = "";
@@ -340,7 +341,7 @@ document.addEventListener("keydown", (event) => {
                 game.cash -= 100;
                 game.renderUpdateStats();
             } else {
-                triggerNotification("Your money is not enough to buy a fish", "");
+                triggerNotification("Your money is not enough to buy a background", "");
             }
         
             feedInput.value = "";
@@ -354,6 +355,8 @@ document.addEventListener("keydown", (event) => {
 
         feedInput.disabled = game.isPaused ? true : false;
         gameNotification.textContent = game.isPaused ? "Game paused" : "";
+    } else if (event.key === "?") {
+        gameHelper.style.display = gameHelper.style.display === "block" ? "none" : "block";
     }
 
     feedInput.focus();

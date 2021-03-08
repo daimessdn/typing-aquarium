@@ -85,3 +85,24 @@ figcaption {
     text-align: center;
     margin-left: -250px;
 }
+
+#game-helper {
+    position: fixed;
+    font-weight: normal;
+    color: rgba(0, 0, 0, .3);
+    line-height: 1.7;
+    margin: 0;
+    right: 8px;
+    top: 8px;
+    width: 300px;
+    text-align: right;
+    display: "block";
+}
+
+#game-helper kbd {
+    padding: 2px;
+    margin-right: 10px;
+    font-weight: bold;
+    border: 1px solid rgba(0, 0, 0, .3);
+    border-radius: 4px;
+}
