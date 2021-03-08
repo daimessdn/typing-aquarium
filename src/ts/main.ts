@@ -109,5 +109,7 @@ for (let i = 0; i <= 10; i++) {
 const generateQuestion = () => {
     document.querySelector("#test")!.innerHTML = "hello";
 
-    console.log()
+    console.log("question added");
 }
+
+generateQuestion();
