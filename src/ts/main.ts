@@ -29,7 +29,7 @@ const words: string[] = [
     "bombyxmorii", "versicolor", "virginica", "turing", "blobfish", "dumbo", "angler", "barrelfish",
     "iguana", "madagaskar", "pavalzar", "zimbabwe", "lvndscape", "dranchuk", "fsck", "nomodeset", "evince",
     "flameshot", "okonomiyaki", "elixir", "history", "hoisting", "daosd", "pudxqa", "sdfop", "ingpd", "sploit",
-    "spotify", "premium", "sponteneus"
+    "spotify", "premium", "spontaneus"
 ];
 
 // define HTML DOM interface
@@ -124,12 +124,14 @@ class Fish {
     
     // init'd fish status
     isHungry: boolean; isDied: boolean; wordToFeed: string = "";
+    hungerTimer: number;
 
     // define fish in game
     constructor(id: string = "",
                 img: string = fishType[Math.floor(Math.random() * fishType.length)],
                 x = Math.floor(Math.random() * (document.body.clientWidth - 220)),
                 y = Math.floor(Math.random() * (document.body.clientHeight - 150))) {
+
         this.id = makeid();
         this.img = img;
         this.x = x;
@@ -138,6 +140,7 @@ class Fish {
         // defined fish status
         this.isHungry = true;
         this.isDied = false;
+        this.hungerTimer = 11;
         
         // load fish instance directly to HTML
         this.generateFish();
@@ -194,16 +197,30 @@ class Fish {
 
            // 10 seconds deadline
            //// else, the fish will die
-           setTimeout(() => {
-				if (this.isHungry && this.wordToFeed !== "") {
+            let countDown = setInterval(() => {
+				if (this.hungerTimer < 0) {
 					console.log("your fish died!");
 					fishDiedSound.play();
 
                     this.isDied = true;
-                    document.querySelector(`#fish-${this.id}`)!.remove();
-				}
-           }, 10000);
+                    this.isHungry = false;
+                    
+                    clearInterval(countDown);
+                    this.triggerDie();
+				} else {
+                    if (!game.isPaused) {
+                        this.hungerTimer--;
+                        // console.log(this.hungerTimer);
+                    }
+
+                    if (!this.isHungry) { clearInterval(countDown); }
+                }
+           }, 1000);
         }
+    }
+
+    triggerDie() {
+        document.querySelector(`#fish-${this.id}`)!.remove();
     }
 }
 
@@ -223,7 +240,7 @@ function makeid() {
 }
 
 // trigger fish movement continuously
-setInterval(function() {
+const triggerFishMovement = setInterval(function() {
     game.fish.forEach(fishItem => {
         fishItem.moveFishInAquarium();
     });
@@ -231,7 +248,7 @@ setInterval(function() {
 
 // watch progress of fish hunger
 //// only if the game is not paused
-setInterval(function() {
+const triggerFishHunger = setInterval(function() {
     if (!game.isPaused) {
         game.fish.forEach(fishItem => {
             fishItem.triggerHungry();
@@ -242,7 +259,7 @@ setInterval(function() {
 // trigger feedInput
 //// this is where you can feed fish by keyboard input
 feedInput.addEventListener("input", () => {
-    // get the hungry fish based on input value
+    // get the hungry fish based on input value (feeding mechanism)
     const getHungryFish = game.fish.filter(matchedFish => 
         feedInput.value == matchedFish.wordToFeed
     );
@@ -252,7 +269,7 @@ feedInput.addEventListener("input", () => {
     //// and proceed the game reward (XP increased and cash increased)
     if (getHungryFish.length > 0) {
         getHungryFish.forEach(fish => {
-            fish.isHungry = false; fish.wordToFeed = "";
+            fish.isHungry = false; fish.wordToFeed = ""; fish.hungerTimer = 10;
             game.xp += game.level; game.cash += 5;
             game.max_xp = 10 + (5 * game.level * game.level);
 
@@ -276,7 +293,8 @@ feedInput.addEventListener("input", () => {
     // instant clear input
     //// using backspace key
     feedInput.addEventListener("keydown", (event) => {
-        if (event.key === "Backspace") {
+        if (event.key === "Backspace" ||
+            event.key === "1") {
             feedInput.value = "";
         }
     });
@@ -284,15 +302,18 @@ feedInput.addEventListener("input", () => {
 
 // keyboard actions
 //// buy fish, backgrounds, and also quit the game
-document.addEventListener("keypress", (event) => {
+document.addEventListener("keydown", (event) => {
     // press 1 to buy the fish
-    if (event.key == "1") {
+    if (event.key === "1") {
         game.fish.push(new Fish());
         fishAddedSound.play();
-
+    
         game.cash -= 100;
         game.renderUpdateStats();
-
+    
         feedInput.value = "";
-    } 
+    } else if (event.key === "Escape") {
+        game.isPaused = game.isPaused ? false : true;
+        console.log("game pause/not paused.");
+    }
 });
