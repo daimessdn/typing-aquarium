@@ -1,12 +1,18 @@
+// define various fish types
+const fishType: string[] = ["fish1.svg", "fish2.svg", "fish3.svg", "fish4.svg",
+                            "fish5.svg", "fish6.svg", "fish7.svg", "fish8.svg",
+                            "fish9.svg", "fish10.svg", "fish11.svg"];
+
 class Game {
     // init'd stats
     level: number; cash: number; xp: number; max_xp: number;
 
-    // // init'd fish
-    // fish: Fish[] = [];
+    // // init'd fish collections in auarium
+    fish: Fish[] = [];
 
     // define initial game stats
-    constructor(stats: { level: number; cash: number; xp: number }) {
+    //// starter will have level 1, 50 cash, and xp point 1
+    constructor(stats: { level: number; cash: number; xp: number } = { level: 1, cash: 50, xp: 1 }) {
         this.level = stats.level;
         this.cash = stats.cash;
         this.xp = stats.xp;
@@ -14,13 +20,14 @@ class Game {
         // determine max_xp for the next level
         this.max_xp = 10 + (5 * this.level * this.level);
 
-        // // init'd two fish
-        // this.fish.push(new Fish({ id: "123abc", img: "fish4.svg", x: 33, y: 44 }));
-        // this.fish.push(new Fish({ id: "123abd", img: "fish2.svg", x: 22, y: 54 }));
+        // init'd two fish
+        this.fish.push(new Fish());
+        this.fish.push(new Fish());
     }
 
     // in case of game level up
     levelUp() {
+        // validating the XP to level up
         if (this.xp >= this.max_xp) {
             this.level += 1;
             this.xp -= this.max_xp;
@@ -30,86 +37,115 @@ class Game {
 
 class Fish {
     // init'd fish properties
-    id: string; img: string; x: number; y: number;
+    id: string = ""; img: string; x: number; y: number; htmlFish: any;
+    
+    // init'd fish status
+    isHungry: boolean; wordToFeed: string = "";
 
-    constructor(stats: { id: string; img: string; x: number; y: number }) {
-        this.id = stats.id;
-        this.img = stats.img;
-        this.x = stats.x;
-        this.y = stats.y;
+    // define fish in game
+    constructor(img: string = fishType[Math.floor(Math.random() * fishType.length)],
+                x = Math.floor(Math.random() * (document.body.clientWidth - 220)),
+                y = Math.floor(Math.random() * (document.body.clientHeight - 150))) {
+        this.img = img;
+        this.x = x;
+        this.y = y;
+
+        this.id = makeid();
+        this.isHungry = true;
+
+        this.generateFish();
     }
 
+    // rendered fish instance to HTML
+    generateFish() {
+        this.htmlFish = document.createElement("img");
+        this.htmlFish.src = `src/img/${this.img}`;
+        this.htmlFish.id = this.id;
+        this.htmlFish.style.cssText = `
+            position: relative; left: ${this.x}px;
+                                top: ${this.y}px;
+        `;
+
+        document.querySelector("#aquarium")!.appendChild(this.htmlFish);
+    }
+
+    // change position of the fish
     changePosition() {
-        this.x = Math.floor(Math.random() * document.body.clientWidth) - 100;
-        this.y = Math.floor(Math.random() * document.body.clientHeight) - 100;
+        this.x = Math.floor(Math.random() * (document.body.clientWidth - 220));
+        this.y = Math.floor(Math.random() * (document.body.clientHeight - 150));
+    }
+
+    // trigger HTML to move fish
+    moveFishInAquarium() {
+        const previousPosition = { x: this.x, y: this.y };
+        this.changePosition();
+    
+        this.htmlFish.style.cssText = `
+            position: relative; left: ${this.x}px;
+                                top: ${this.y}px;`;
+    
+        this.htmlFish.style.transform = previousPosition.x < this.x ?
+                                        "rotateY(0deg)" : "rotateY(180deg)";
+    }
+
+    // generate word to feed the fish (if the fish hungry)
+    triggerHungry() {
+        if (this.isHungry && this.wordToFeed === "") {
+           this.wordToFeed = words[Math.floor(Math.random() * words.length)];
+           console.log(this);
+        }
     }
 }
 
-const fish1 = new Fish({ id: "123abc", img: "fish4.svg", x: 33, y: 44 });
-const fish2 = new Fish({ id: "123abc", img: "fish1.svg", x: 22, y: 54 });
-
-let htmlFish = document.createElement("img");
-htmlFish.src = `src/img/${fish1.img}`;
-htmlFish.style.cssText = `
-    position: relative;
-    left: ${fish1.x}px;
-    top: ${fish1.y}px;
-`;
-
-let htmlFish2 = document.createElement("img");
-htmlFish2.src = `src/img/${fish2.img}`;
-htmlFish2.style.cssText = `
-    position: relative;
-    left: ${fish2.x}px;
-    top: ${fish2.y}px;
-`;
-
-document.querySelector("#aquarium")!.appendChild(htmlFish);
-document.querySelector("#aquarium")!.appendChild(htmlFish2);
-
-const moveFishInAquarium = (fish: Fish, mv: number) => {
-    setTimeout(() => {
-        const previousPosition = { x: fish.x, y: fish.y };
-        fish.changePosition();
-
-        htmlFish.style.cssText = `
-            position: relative;
-            left: ${fish.x}px;
-            top: ${fish.y}px;
-        `;
-
-        htmlFish.style.transform = previousPosition.x < fish.x ? "rotateY(0deg)" : "rotateY(180deg)";
-
-        console.log(htmlFish.style);
-    }, Math.floor(Math.random() * 10000) * mv);
+function makeid() {
+   var result           = '';
+   var characters       = '0123456789abcdef';
+   var charactersLength = characters.length;
+   for ( var i = 0; i < 15; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+   }
+   return result;
 }
 
-const moveFishInAquarium2 = (fish: Fish, mv: number) => {
-    setTimeout(() => {
-        const previousPosition = { x: fish.x, y: fish.y };
-        fish.changePosition();
-        
-        htmlFish2.style.cssText = `
-            position: relative;
-            left: ${fish.x}px;
-            top: ${fish.y}px;
-        `;
+const game = new Game();
 
-        htmlFish2.style.transform = previousPosition.x < fish.x ? "rotateY(0deg)" : "rotateY(180deg)";
+setInterval(function() {
+    game.fish.forEach(fishItem => {
+        fishItem.moveFishInAquarium();
+    });
+}, Math.floor(Math.random() * 10000));
 
-        console.log(htmlFish.style);
-    }, Math.floor(Math.random() * 10000) * mv);
-}
+setInterval(function() {
+    game.fish.forEach(fishItem => {
+        fishItem.triggerHungry();
+    });
+}, Math.floor(50));
 
-for (let i = 0; i <= 10; i++) {
-    moveFishInAquarium(fish1, i);
-    moveFishInAquarium2(fish2, i);
-}
+const feedInput = document.querySelector("#feeding-keyboard")! as HTMLInputElement;
 
-const generateQuestion = () => {
-    document.querySelector("#test")!.innerHTML = "hello";
+feedInput.addEventListener("input", (event) => {
+    // get the hungry fish based on input value
+    const getHungryFish = game.fish.filter(matchedFish => 
+        feedInput.value == matchedFish.wordToFeed
+    );
 
-    console.log("question added");
-}
+    // in case we got the hungry fish,
+    //// change fish status hunger
+    //// and proceed the game reward (XP increased and cash increased)
+    if (getHungryFish.length > 0) {
+        getHungryFish.forEach(fish => {
+            fish.isHungry = false; fish.wordToFeed = "";
+            game.xp += game.level; game.cash += 5;
+            game.max_xp = 10 + (5 * game.level * game.level);
 
-generateQuestion();
+            setTimeout(() => fish.isHungry = true, 10000);
+
+            game.levelUp();
+
+            // clear input
+            feedInput.value = "";
+        });
+
+        console.log(game);
+    }
+})
