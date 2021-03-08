@@ -29,7 +29,15 @@ const words: string[] = [
     "bombyxmorii", "versicolor", "virginica", "turing", "blobfish", "dumbo", "angler", "barrelfish",
     "iguana", "madagaskar", "pavalzar", "zimbabwe", "lvndscape", "dranchuk", "fsck", "nomodeset", "evince",
     "flameshot", "okonomiyaki", "elixir", "history", "hoisting", "daosd", "pudxqa", "sdfop", "ingpd", "sploit",
-    "spotify", "premium", "spontaneus"
+    "spotify", "premium", "spontaneus", "snowmode", "hiddenspace", "copywriting", "copyright", "gksudo", "ifconfig",
+    "vscode", "vaccine", "zusammen", "arbeite", "bureaucracy", "onomatopoeia", "occurence", "maneuver", 
+    "alveolus", "massachusetts", "sweetscar", "cardigan", "oscillator", "scenegraph", "district",
+    "camouflage", "nefarious", "hegemony", "matsutake", "cellulla", "pseudomonas", "shutdown", "jinzo", "ushioni",
+    "twinheaded", "thunderdragon", "magician", "plaque", "pheumonia", "xerophthalmia", "sdu", "qw", "siz",
+    "e", "i", "z", "mercedez", "benz", "volkswagen", "ievan", "pollka", "aristoteles", "archimedes",
+    "redi", "oxygen", "krypton", "argentum", "dacapo", "ibidem", "pathway", "metabolism", "carbohydrate",
+    "phosphate", "wettability", "humidity", "basketball", "petit", "dance", "macabre", "uroboros", "ferdinand",
+    "oyeleye", "adeyinka", "aderonke", "morenike", "faderara"
 ];
 
 // define HTML DOM interface
