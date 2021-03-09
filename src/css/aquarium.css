@@ -26,10 +26,6 @@ html, body {
     margin: 0;
 }
 
-#stats:hover {
-    color:rgba(0, 0, 0, 1);
-}
-
 #stats div * {
     display: inline-block;
 }
@@ -91,6 +87,7 @@ figcaption {
     width: 500px;
     text-align: center;
     margin-left: -250px;
+    transition: all .3s ease;
 }
 
 #game-helper {
@@ -107,7 +104,7 @@ figcaption {
     transition: all .3s ease;
 }
 
-#game-helper:hover {
+#game-helper:hover, #game-notification:hover, #stats:hover {
     color:rgba(0, 0, 0, 1);
 }
 
