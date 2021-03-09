@@ -253,11 +253,15 @@ function makeid() {
 }
 
 // trigger fish movement continuously
+let movementTime = Math.floor(Math.random() * 10000);
+
 const triggerFishMovement = setInterval(function() {
     game.fish.forEach(fishItem => {
         fishItem.moveFishInAquarium();
     });
-}, Math.floor(Math.random() * 10000));
+
+    movementTime = Math.floor(Math.random() * 10000);
+}, movementTime);
 
 // trigger hunger countdown
 const triggerCountdown = setInterval(function() {
