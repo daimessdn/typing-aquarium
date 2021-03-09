@@ -17,7 +17,7 @@ const words: string[] = [
     "poutine", "rinkrat", "thepeg", "timbits", "toque", "washroom", "amazon", "wellerman", "argules", "runners",
     "darts", "gelay", "anjay", "azure", "eier", "spacex", "caribou", "aqua", "typewriter", "elusmod", "tempor",
     "venlam", "blanditiis", "iusto", "malorum", "autem", "fuga", "chiton", "omnis", "vivipar", "fakear",
-    "anuum", "oleum", "hirata", "onyx", "vaporeon", "kirlia", "charmeleon", "saulus", "quam", "wocher",
+    "anuum", "onyx", "vaporeon", "kirlia", "charmeleon", "saulus", "quam", "wocher",
     "jahre", "alt", "vierzehn", "zwanzig", "winters", "portfolio", "suburban", "manhattan", "pizza", "assuming",
     "pollka", "zigizaga", "alumunium", "foramens", "only", "manganese", "molybdenum", "legume", "benzene",
     "birch", "rattata", "thunderbolt", "gitignore", "boltcutter", "lockpick", "deutschland", "impromptu",
@@ -69,7 +69,7 @@ if (!localStorage.getItem(GAMESTATS_LOCAL_KEY)) {
 }
 
 // other variables
-const fishTanks = JSON.parse(localStorage.getItem(TANKS_LOCAL_KEY)!);
+let fishTanks = JSON.parse(localStorage.getItem(TANKS_LOCAL_KEY)!);
 let aquariumIteration = 0;
 
 class Game {
@@ -125,14 +125,14 @@ class Game {
     }
 
     // rendering updated stats of the game
-    renderUpdateStats() {
+    updateStats() {
         // update stats to HTML
         levelStats.textContent = this.level.toString();
         cashStats.textContent = this.cash.toString();
         xpStats.textContent = this.xp.toString();
         maxXpStats.textContent = this.max_xp.toString();
 
-        // check fish which are not died
+        // filter fish which are not died
         this.fish = this.fish.filter(fish => !fish.isDied);
 
         // upload game and fish status to localStorage
@@ -140,6 +140,12 @@ class Game {
         localStorage.setItem(GAMESTATS_LOCAL_KEY, JSON.stringify(stats));
         localStorage.setItem(FISH_LOCAL_KEY, JSON.stringify(this.fish));
         localStorage.setItem(TANKS_LOCAL_KEY, JSON.stringify(fishTanks));
+    }
+
+    restartStats() {
+        this.level = 1;
+        this.cash = 50;
+        this.xp = 1;
     }
 }
 
@@ -223,12 +229,10 @@ class Fish {
     }
     
     triggerDie() {
-        console.log("your fish died!");
-        fishDiedSound.play();
-    
         this.isDied = true;
         this.isHungry = false;
         
+        fishDiedSound.play();
         document.querySelector(`#fish-${this.id}`)!.remove();
     }
 }
@@ -236,7 +240,7 @@ class Fish {
 // define a new game
 //// and also update game state
 const game = new Game(JSON.parse(localStorage.getItem(GAMESTATS_LOCAL_KEY)!));
-game.renderUpdateStats();
+game.updateStats();
 
 function makeid() {
    var result           = '';
@@ -269,11 +273,23 @@ const triggerCountdown = setInterval(function() {
                 triggerNotification("Oh, no! Your fish is died!", "");
             }
 
-            game.renderUpdateStats();
+            game.updateStats();
         });
     }
-}, 1000);
 
+    if (game.fish.length < 1) {
+        // restart game stats
+        game.restartStats();
+
+        localStorage.setItem(GAMESTATS_LOCAL_KEY, '{ "level": 1, "cash": 50, "xp": 1 }');
+        localStorage.setItem(FISH_LOCAL_KEY, "[ ]");
+        localStorage.setItem(TANKS_LOCAL_KEY, '["aquarium1"]');
+
+        feedInput.disabled = true;
+
+        gameNotification.textContent = "All your fish are died. Please reload (Ctrl + R) to restart game."
+    }
+}, 1000);
 
 // trigger feedInput
 //// this is where you can feed fish by keyboard input
@@ -300,7 +316,7 @@ feedInput.addEventListener("input", () => {
             // check for level up
             //// and update game stats
             game.validateLevelUp();
-            game.renderUpdateStats();
+            game.updateStats();
 
             // clear input
             feedInput.value = "";
@@ -320,49 +336,59 @@ feedInput.addEventListener("input", () => {
 
 // keyboard actions
 //// buy fish, backgrounds, and also quit the game
-document.addEventListener("keydown", (event) => {
+document.body.addEventListener("keydown", (event) => {
     // press 1 to buy the fish
     //// as long as the game is not paused
     if (event.key === "1") {
         if (game.isPaused === false) {
-            if (game.cash >= 100) {
-                game.fish.push(new Fish());
-                fishAddedSound.play();
-                triggerNotification("You bought a new fish. Take care of it.", "");
-
-                game.cash -= 100;
-                game.renderUpdateStats();
+            if (game.fish.length > 0) {
+                if (game.cash >= 100) {
+                    game.fish.push(new Fish());
+                    fishAddedSound.play();
+                    triggerNotification("You bought a new fish. Take care of it.", "");
+    
+                    game.cash -= 100;
+                    game.updateStats();
+                } else {
+                    triggerNotification("Your money is not enough to buy a fish!", "");
+                }
             } else {
-                triggerNotification("Your money is not enough to buy a fish!", "");
+                triggerNotification("Your game is already over. You cannot buy fish anymore.",
+                                    "All your fish are died. Please reload (Ctrl + R) to restart game.");
             }
-        
-            feedInput.value = "";
         } else {
             triggerNotification("You cannot buy a fish in paused mode!",
                                 "Game paused");
         }
     } else if (event.key === "2") {
         if (game.isPaused === false) {
-            if (game.cash >= 1000 && !fishTanks.includes("aquarium2")) {
-                fishTanks.push("aquarium2");
+            // in case of you still have fish
+            if (game.fish.length > 0) {
+                if (game.cash >= 1000 && !fishTanks.includes("aquarium2")) {
+                    // if your money is enought and you can afford the background
+                    fishTanks.push("aquarium2");
 
-                tankAddedSound.play();
-                triggerNotification("Congratulations! You've bought a new background! Your fish must be love it.", "");
-                
-                aquariumIteration += 1;
-                aquarium.style.backgroundImage = `linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.2)),
-                                                  url("src/img/aquariums/${
-                                                      fishTanks[aquariumIteration % fishTanks.length]
-                                                  }.svg")`;
-                game.cash -= 1000;
-                game.renderUpdateStats();
-            } else if (fishTanks.includes("aquarium2")) {
-                triggerNotification("You have already bought a background!", "");
+                    tankAddedSound.play();
+                    triggerNotification("Congratulations! You've bought a new background! Your fish must be love it.", "");
+                    
+                    aquariumIteration += 1;
+                    aquarium.style.backgroundImage = `linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.2)),
+                                                    url("src/img/aquariums/${
+                                                        fishTanks[aquariumIteration % fishTanks.length]
+                                                    }.svg")`;
+                    game.cash -= 1000;
+                    game.updateStats();
+                } else if (fishTanks.includes("aquarium2")) {
+                    // in case you already ahve a background
+                    triggerNotification("You have already bought a background!", "");
+                } else {
+                    // your money is not enough
+                    triggerNotification("Your money is not enough to buy a background!", "");
+                }
             } else {
-                triggerNotification("Your money is not enough to buy a background!", "");
+                triggerNotification("Your game is already over. You cannot buy a background anymore.",
+                                    "All your fish are died. Please reload (Ctrl + R) to restart game.");
             }
-        
-            feedInput.value = "";
         } else {
             triggerNotification("You cannot buy a background in paused mode!",
                                 "Game paused");

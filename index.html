@@ -10,20 +10,56 @@
 </head>
 <body>
     <header>
-		<h1>Typing with fish so much fun!</h1>
+		<div class="container container-flex">
+			<h1>Typing Aquarium gives you double fun!</h1>
+	
+			<p>Practice your typing skills and have fun at the same time by raising your own fish!</p>
+	
+			<p>Type "Let's type!" on the input section below to begin. You can also type "Learn more" to explore more about Typing Aquarium.</p>
+	
+			<section>
+				<input type="text" id="cta" placeholder="Type here..."
+				                            autofocus />
+			</section>
+		</div>
 
-		<p>Let's get keyboard practicing while having fun with fish for your best typing experience!</p>
-
-		<section>
-			<a href="aquarium.html">Let's type!</a>
-		</section>
-
-		<section>
+		<!-- <section>
 			<p>
 				Created by <a href="https://github.com/daimessdn">@daimessdn</a><br />
 				In order to participate in <a href="https://mintbean.io">Mintbean</a> Hackathon.
 			</p>
-		</section>
+		</section> -->
 	</header>
+
+	<main id="about">
+		<div class="container container-flex">
+			<h1>What is Typing Aquarum?</h1>
+			<p>Typing Aquarium is a petting simulation game by using keyboard. By typing, you can feed the fish and get XP and cash points that you can use for buying more fish and exclusive aquarium backgrounds.</p>
+
+			<p>As you can see, here's what Typing Aquarium looks like.</p>
+	
+			<img src="src/img/demo/demo-laptop.gif" alt="Typing Aquarium demo" />
+			<a class="attribution" href='https://www.freepik.com/vectors/wood'>Wood vector created by upklyak - www.freepik.com</a>
+		</div>
+
+	</main>
+
+	<footer>
+		
+	</footer>
+
+	<script>
+		const CTA = document.querySelector("#cta");
+
+		cta.addEventListener("input", () => {
+			if (cta.value == "Let's type!") {
+				window.location.href = "aquarium.html";
+				cta.value = "";
+			} else if (cta.value == "Learn more") {
+				window.location.href = "#about";
+				cta.value = "";
+			}
+		})
+	</script>
 </body>
 </html>
