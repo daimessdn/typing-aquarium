@@ -65,7 +65,7 @@ const TANKS_LOCAL_KEY = "aquarium.tanks";
 if (!localStorage.getItem(GAMESTATS_LOCAL_KEY)) {
     localStorage.setItem(GAMESTATS_LOCAL_KEY, '{ "level": 1, "cash": 50, "xp": 1 }');
     localStorage.setItem(FISH_LOCAL_KEY, "[ ]");
-    localStorage.setItem(TANKS_LOCAL_KEY, "['aquarium1']");
+    localStorage.setItem(TANKS_LOCAL_KEY, '["aquarium1"]');
 }
 
 // other variables

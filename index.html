@@ -9,13 +9,15 @@
     <link rel="stylesheet" href="src/css/main.css" />
 </head>
 <body>
-    <header>
+    <header id="home">
 		<div class="container container-flex">
 			<h1>Typing Aquarium gives you double fun!</h1>
 	
 			<p>Practice your typing skills and have fun at the same time by raising your own fish!</p>
 	
-			<p>Type "Let's type!" on the input section below to begin. You can also type "Learn more" to explore more about Typing Aquarium.</p>
+			<p>Type "Let's type!" on the input section below to begin.<br />
+			   You can also type "Learn more" to explore more about Typing Aquarium.</br />
+			   Or, you can type "Instruction" for see the game instruction.</p>
 	
 			<section>
 				<input type="text" id="cta" placeholder="Type here..."
@@ -31,21 +33,104 @@
 		</section> -->
 	</header>
 
-	<main id="about">
-		<div class="container container-flex">
-			<h1>What is Typing Aquarum?</h1>
-			<p>Typing Aquarium is a petting simulation game by using keyboard. By typing, you can feed the fish and get XP and cash points that you can use for buying more fish and exclusive aquarium backgrounds.</p>
+	<main>
+		<section id="about">
+			<div class="container container-flex">
+				<h1>What is Typing Aquarum?</h1>
+				<p>Typing Aquarium is a petting simulation game by using keyboard. By typing, you can feed the fish and get XP and cash points that you can use for buying more fish and exclusive aquarium backgrounds.</p>
 
-			<p>As you can see, here's what Typing Aquarium looks like.</p>
-	
-			<img src="src/img/demo/demo-laptop.gif" alt="Typing Aquarium demo" />
-			<a class="attribution" href='https://www.freepik.com/vectors/wood'>Wood vector created by upklyak - www.freepik.com</a>
-		</div>
+				<p>As you can see below.</p>
+		
+				<img src="src/img/demo/demo-laptop.gif" alt="Typing Aquarium demo" />
+				<a class="attribution" href='https://www.freepik.com/vectors/wood'>Wood vector created by upklyak - www.freepik.com</a>
+			</div>
+		</section>
 
+		<section id="instruction">
+			<div class="container container-flex">
+				<h1>Common instructions.</h1>
+				<details open>
+					<summary><h2>How to play Typing Aquarium?</h2></summary>
+
+					<p>
+						You can simply play Typing Aquarium by simply feed the fish by typing the word appeared (on the fish) on the input space below the aquarium. Remember, fish can died if you don't feed them by 10 seconds since the word appeared.
+					</p>
+				</details>
+
+				<details open>
+					<summary><h2>What are XP and cash?</h2></summary>
+
+					<p>
+						XP is the point you can use to level up, meanwhile cash is the point you can use to buy more fish and exclusive backgrounds. You can earn them by keep feed the fish to gain the cash and XP points.
+					</p>
+				</details>
+
+				<details open>
+					<summary><h2>How can I buy fish and wallpapers?</h2></summary>
+
+					<p>
+						You can buy the fish by pressing <kbd>1</kbd> or wallpaper by pressing <kbd>2</kbd> on your keyboard. Remember that fish and background have a price so you need to collect cash to buy them.
+					</p>
+				</details>
+
+				<details open>
+					<summary><h2>What happened if all my fish are died?</h2></summary>
+
+					<p>
+						Your game is over and your progress will be restarted. You can restart your game by pressing <kbd>Ctrl</kbd> + <kbd>R</kbd>
+					</p>
+				</details>
+
+				<details open>
+					<summary><h2>I still don't understand how to play. What should I do?</h2></summary>
+
+					<p>
+						Don't worry. When you are playing, there is some helper on the top right side of the aquarium where tells you how to buy fish, buy background, pause the game, and more. 
+					</p>
+				</details>
+
+				<details open>
+					<summary><h2>Can I give feedback to this game?</h2></summary>
+
+					<p>
+						Feedbacks are open to improve Typing Aquarium better by <a href="https://forms.gle/U7JF7tA9QbrA5Mjy6">clicking this</a>. You can also typing <kbd>`</kbd> when you are currently playing the game. Don't worry, Your game will be paused automatically when you are filling the feedback form.
+					</p>
+				</details>
+			</div>
+		</section>
 	</main>
 
 	<footer>
-		
+		<div>
+			<p>
+				Code with<br />
+				<img class="language-logo" src="src/img/icon/tslogo.svg" title="TypeScript" alt="TypeScript" />
+				<img class="language-logo" src="src/img/icon/jslogo.svg" title="JavaScript" alt="JavaScript" /><br />and also  <img class="just-icon" src="src/img/icon/heart.svg" title="love" alt="love" /> by daimessdn <img class="just-icon" src="src/img/icon/wave.svg" title="(hello world)" alt="(hello world)" />
+			</p>
+
+			<p>
+				In order to participate in <a href="https://mintbean.io" target="_blank">Mintbean</a> Hackathon. Why don't you also <a href="https://mintbean.io" target="_blank">join</a>?
+			</p>
+		</div>
+
+		<div>
+			<p>Reach me on<br />
+				<ul class="social-media-footer">
+					<li><a href="https://www.github.com/daimessdn">
+						<img src="src/img/icon/github.svg" alt="GitHub" title="GitHub" />
+						</a></li> 
+					<li><a href="https://www.twitter.com/daimessdn">
+						<img src="src/img/icon/twitter.svg" alt="Twitter" title="Twitter" />
+						</a></li>
+					<li><a href="https://www.linkedin.com/in/dimaswehhh">
+						<img src="src/img/icon/linkedin.svg" alt="Linkedin" title="Linkedin" />
+						</a></li> 
+					<li><a href="mailtp:daimessdn@gmail.com">
+						<img src="src/img/icon/email.svg" alt="Email" title="Email" />
+						</a></li> 
+				</ul>
+			</p>
+		</div>
 	</footer>
 
 	<script>
@@ -58,8 +143,18 @@
 			} else if (cta.value == "Learn more") {
 				window.location.href = "#about";
 				cta.value = "";
+			} else if (cta.value == "Instruction") {
+				window.location.href = "#instruction";
+				cta.value = "";
 			}
-		})
+		});
+
+		document.body.addEventListener("keydown", (event) => {
+			if (event.key === "Escape") {
+				window.location.href = "#home";
+				// cta.focus();
+			}
+		});
 	</script>
 </body>
 </html>
