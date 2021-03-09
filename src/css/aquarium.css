@@ -1,12 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo+Narrow&display=swap');
 
-*, input, button {
-    font-family: "Josefin Sans", sans-serif;
+* {
+    font-family: "Archivo Narrow", sans-serif;
     user-select: none;
 }
 
 html, body {
-    font-family: "Josefin Sans", sans-serif;
+    font-family: "Archivo Narrow", sans-serif;
     margin: 0;
     padding: 0;
     height: 100%;
@@ -24,6 +24,10 @@ html, body {
 
 #stats * {
     margin: 0;
+}
+
+#stats h1, #stats h2 {
+    font-family: "Archivo Black", sans-serif;
 }
 
 #stats div * {
@@ -61,9 +65,12 @@ figcaption {
     font-weight: bold;
     font-size: 1.5em;
     position: absolute;
+
+    font-family: "Archivo Black";
 }
 
 #feeding-keyboard {
+    font-family: "Archivo Black";
     background: none;
     border: none;
     outline: none;
@@ -71,7 +78,7 @@ figcaption {
     font-weight: bold;
     font-size: 2em;
 
-    width: 300px;
+    width: 400px;
     position: fixed;
     bottom: 8px;
     left: 50%;

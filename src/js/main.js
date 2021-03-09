@@ -123,7 +123,7 @@ class Game {
 }
 class Fish {
     // define fish in game
-    constructor(id = "", img = fishType[Math.floor(Math.random() * fishType.length)], x = Math.floor(Math.random() * (document.body.clientWidth * 0.8)), y = Math.floor(Math.random() * (document.body.clientHeight * 0.8)), hungerTimer = 11) {
+    constructor(id = "", img = fishType[Math.floor(Math.random() * fishType.length)], x = Math.floor(Math.random() * (document.body.clientWidth * 0.75)), y = Math.floor(Math.random() * (document.body.clientHeight * 0.45)), hungerTimer = 11) {
         this.wordToFeed = "";
         this.id = makeid();
         this.img = img;
@@ -155,8 +155,8 @@ class Fish {
     }
     // change position of the fish
     changePosition() {
-        this.x = Math.floor(Math.random() * (document.body.clientWidth * 0.8));
-        this.y = Math.floor(Math.random() * (document.body.clientHeight * 0.8));
+        this.x = Math.floor(Math.random() * (document.body.clientWidth * 0.75));
+        this.y = Math.floor(Math.random() * (document.body.clientHeight * 0.45));
     }
     // trigger HTML to move fish
     moveFishInAquarium() {
@@ -201,6 +201,7 @@ let movementTime = Math.floor(Math.random() * 10000);
 const triggerFishMovement = setInterval(function () {
     game.fish.forEach(fishItem => {
         fishItem.moveFishInAquarium();
+        console.log(fishItem.x, fishItem.y);
     });
     movementTime = Math.floor(Math.random() * 10000);
 }, movementTime);
