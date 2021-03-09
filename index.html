@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="src/css/main.css" />
 </head>
 <body>
+	<div id="escape">
+		<kbd>esc</kbd> Back to top
+	</div>
     <header id="home">
 		<div class="container container-flex">
 			<h1>Typing Aquarium gives you double fun!</h1>
@@ -24,13 +27,6 @@
 				                            autofocus />
 			</section>
 		</div>
-
-		<!-- <section>
-			<p>
-				Created by <a href="https://github.com/daimessdn">@daimessdn</a><br />
-				In order to participate in <a href="https://mintbean.io">Mintbean</a> Hackathon.
-			</p>
-		</section> -->
 	</header>
 
 	<main>
@@ -152,7 +148,7 @@
 		document.body.addEventListener("keydown", (event) => {
 			if (event.key === "Escape") {
 				window.location.href = "#home";
-				// cta.focus();
+				setTimeout(() => { cta.focus(); }, 1000);
 			}
 		});
 	</script>
