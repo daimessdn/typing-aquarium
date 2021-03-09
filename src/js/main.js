@@ -123,7 +123,7 @@ class Game {
 }
 class Fish {
     // define fish in game
-    constructor(id = "", img = fishType[Math.floor(Math.random() * fishType.length)], x = Math.floor(Math.random() * (document.body.clientWidth - 180)), y = Math.floor(Math.random() * (document.body.clientHeight - 220)), hungerTimer = 11) {
+    constructor(id = "", img = fishType[Math.floor(Math.random() * fishType.length)], x = Math.floor(Math.random() * (document.body.clientWidth * 0.8)), y = Math.floor(Math.random() * (document.body.clientHeight * 0.8)), hungerTimer = 11) {
         this.wordToFeed = "";
         this.id = makeid();
         this.img = img;
@@ -155,8 +155,8 @@ class Fish {
     }
     // change position of the fish
     changePosition() {
-        this.x = Math.floor(Math.random() * (document.body.clientWidth - 180));
-        this.y = Math.floor(Math.random() * (document.body.clientHeight - 220));
+        this.x = Math.floor(Math.random() * (document.body.clientWidth * 0.8));
+        this.y = Math.floor(Math.random() * (document.body.clientHeight * 0.8));
     }
     // trigger HTML to move fish
     moveFishInAquarium() {

@@ -160,8 +160,8 @@ class Fish {
     // define fish in game
     constructor(id: string = "",
                 img: string = fishType[Math.floor(Math.random() * fishType.length)],
-                x: number = Math.floor(Math.random() * (document.body.clientWidth - 180)),
-                y: number = Math.floor(Math.random() * (document.body.clientHeight - 220)),
+                x: number = Math.floor(Math.random() * (document.body.clientWidth * 0.8)),
+                y: number = Math.floor(Math.random() * (document.body.clientHeight * 0.8)),
                 hungerTimer:number = 11) {
 
         this.id = makeid();
@@ -202,8 +202,8 @@ class Fish {
 
     // change position of the fish
     changePosition() {
-        this.x = Math.floor(Math.random() * (document.body.clientWidth - 180));
-        this.y = Math.floor(Math.random() * (document.body.clientHeight - 220));
+        this.x = Math.floor(Math.random() * (document.body.clientWidth * 0.8));
+        this.y = Math.floor(Math.random() * (document.body.clientHeight * 0.8));
     }
 
     // trigger HTML to move fish
