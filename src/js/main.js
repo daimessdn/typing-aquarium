@@ -93,12 +93,11 @@ class Game {
         }
     }
     // in case of game level up
-    validateLevelUp() {
-        // validating the XP to level up
-        if (this.xp >= this.max_xp) {
-            this.level += 1;
-            this.xp -= this.max_xp;
-        }
+    levelUp() {
+        // increase level and reduce xp progress
+        //// by previous max XP
+        this.level += 1;
+        this.xp -= this.max_xp;
     }
     // rendering updated stats of the game
     updateStats() {
@@ -252,7 +251,10 @@ feedInput.addEventListener("input", () => {
             setTimeout(() => fish.isHungry = true, 10000 + (game.level * 100));
             // check for level up
             //// and update game stats
-            game.validateLevelUp();
+            if (game.xp >= game.max_xp) {
+                game.levelUp();
+                triggerNotification(`You have levelled up to level ${game.level}. Keep it up!`, "");
+            }
             game.updateStats();
             // clear input
             feedInput.value = "";
