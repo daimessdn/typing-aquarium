@@ -40,23 +40,11 @@ const words = [
     "oyeleye", "adeyinka", "aderonke", "morenike", "faderara"
 ];
 // define HTML DOM interface
-const aquarium = document.querySelector("#aquarium");
-const feedInput = document.querySelector("#feeding-keyboard");
-const levelStats = document.querySelector("#level-stats");
-const cashStats = document.querySelector("#cash-stats");
-const xpStats = document.querySelector("#xp-stats");
-const maxXpStats = document.querySelector("#max-xp-stats");
-const gameNotification = document.querySelector("#game-notification");
-const gameHelper = document.querySelector("#game-helper");
+const aquarium = document.querySelector("#aquarium"), feedInput = document.querySelector("#feeding-keyboard"), levelStats = document.querySelector("#level-stats"), cashStats = document.querySelector("#cash-stats"), xpStats = document.querySelector("#xp-stats"), maxXpStats = document.querySelector("#max-xp-stats"), gameNotification = document.querySelector("#game-notification"), gameHelper = document.querySelector("#game-helper");
 // sounds library
-const fishEatenSound = new Audio("src/sounds/slurp.mp3");
-const fishAddedSound = new Audio("src/sounds/splash.mp3");
-const fishDiedSound = new Audio("src/sounds/bruh.mp3");
-const tankAddedSound = new Audio("src/sounds/wow.mp3");
+const fishEatenSound = new Audio("src/sounds/slurp.mp3"), fishAddedSound = new Audio("src/sounds/splash.mp3"), fishDiedSound = new Audio("src/sounds/bruh.mp3"), tankAddedSound = new Audio("src/sounds/wow.mp3");
 // define local keys for localStorage
-const GAMESTATS_LOCAL_KEY = "aquarium.gamestats";
-const FISH_LOCAL_KEY = "aquarium.fish";
-const TANKS_LOCAL_KEY = "aquarium.tanks";
+const GAMESTATS_LOCAL_KEY = "aquarium.gamestats", FISH_LOCAL_KEY = "aquarium.fish", TANKS_LOCAL_KEY = "aquarium.tanks";
 // create game status for the first time
 if (!localStorage.getItem(GAMESTATS_LOCAL_KEY)) {
     localStorage.setItem(GAMESTATS_LOCAL_KEY, '{ "level": 1, "cash": 50, "xp": 1 }');
@@ -64,8 +52,7 @@ if (!localStorage.getItem(GAMESTATS_LOCAL_KEY)) {
     localStorage.setItem(TANKS_LOCAL_KEY, '["aquarium1"]');
 }
 // other variables
-let fishTanks = JSON.parse(localStorage.getItem(TANKS_LOCAL_KEY));
-let aquariumIteration = 0;
+let fishTanks = JSON.parse(localStorage.getItem(TANKS_LOCAL_KEY)), aquariumIteration = 0;
 class Game {
     // define initial game stats
     //// starter will have level 1, 50 cash, and xp point 1
@@ -114,6 +101,7 @@ class Game {
         localStorage.setItem(FISH_LOCAL_KEY, JSON.stringify(this.fish));
         localStorage.setItem(TANKS_LOCAL_KEY, JSON.stringify(fishTanks));
     }
+    // restart game stats
     restartStats() {
         this.level = 1;
         this.cash = 50;
@@ -124,6 +112,7 @@ class Fish {
     // define fish in game
     constructor(id = "", img = fishType[Math.floor(Math.random() * fishType.length)], x = Math.floor(Math.random() * (document.body.clientWidth * 0.75)), y = Math.floor(Math.random() * (document.body.clientHeight * 0.45)), hungerTimer = 11) {
         this.wordToFeed = "";
+        // define information of the fish
         this.id = makeid();
         this.img = img;
         this.x = x;
@@ -137,15 +126,18 @@ class Fish {
     }
     // rendered fish instance to HTML
     generateFish() {
+        // create fish HTML element
         this.htmlFish = document.createElement("figure");
         this.htmlFish.id = `fish-${this.id}`;
         this.htmlFish.style.cssText = `
             position: relative; left: ${this.x}px;
                                 top: ${this.y}px;
         `;
+        // create element for rendering fish image
         const img = document.createElement("img");
         img.src = `src/img/fish/${this.img}`;
         img.draggable = false;
+        // caption for word feeding
         const feedCaption = document.createElement("figcaption");
         feedCaption.id = `word-${this.id}`;
         this.htmlFish.appendChild(img);
@@ -159,8 +151,10 @@ class Fish {
     }
     // trigger HTML to move fish
     moveFishInAquarium() {
+        // get old position and update new position
         const previousPosition = { x: this.x, y: this.y };
         this.changePosition();
+        // change CSS properties of fish element
         this.htmlFish.style.cssText = `
             position: relative; left: ${this.x}px;
                                 top: ${this.y}px;`;
@@ -175,6 +169,7 @@ class Fish {
             document.querySelector(`#word-${this.id}`).textContent = this.wordToFeed;
         }
     }
+    // actions in case the fish is died
     triggerDie() {
         this.isDied = true;
         this.isHungry = false;
@@ -186,6 +181,7 @@ class Fish {
 //// and also update game state
 const game = new Game(JSON.parse(localStorage.getItem(GAMESTATS_LOCAL_KEY)));
 game.updateStats();
+// generate ID
 function makeid() {
     var result = '';
     var characters = '0123456789abcdef';
@@ -206,6 +202,8 @@ const triggerFishMovement = setInterval(function () {
 }, movementTime);
 // trigger hunger countdown
 const triggerCountdown = setInterval(function () {
+    // fish hunger timer will be updated
+    //// in case the game is not paused
     if (!game.isPaused) {
         game.fish.forEach(fishItem => {
             fishItem.hungerTimer -= 1;
@@ -219,6 +217,7 @@ const triggerCountdown = setInterval(function () {
             game.updateStats();
         });
     }
+    // in case of game over
     if (game.fish.length < 1) {
         // restart game stats
         game.restartStats();
@@ -330,6 +329,7 @@ document.body.addEventListener("keydown", (event) => {
         }
     }
     else if (event.key === "0") {
+        // switch background
         aquariumIteration += 1;
         aquarium.style.backgroundImage = `linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.2)),
                                           url("src/img/aquariums/${fishTanks[aquariumIteration % fishTanks.length]}.svg")`;
@@ -338,7 +338,7 @@ document.body.addEventListener("keydown", (event) => {
         pauseGame();
     }
     else if (event.key === "?") {
-        gameHelper.style.display = gameHelper.style.display === "block" ? "none" : "block";
+        gameHelper.style.display = gameHelper.style.display !== "block" ? "none" : "block";
     }
     else if (event.key === "`") {
         if (!game.isPaused) {
@@ -348,6 +348,7 @@ document.body.addEventListener("keydown", (event) => {
     }
     document.body.click();
 });
+// trigger notification message
 function triggerNotification(text, finalText) {
     gameNotification.textContent = text;
     setTimeout(() => { gameNotification.textContent = finalText; }, 5000);
@@ -357,6 +358,7 @@ window.onclick = () => {
         feedInput.focus();
     }
 };
+// pause game function
 function pauseGame() {
     game.isPaused = game.isPaused ? false : true;
     // console.log("game pause/not paused.");
