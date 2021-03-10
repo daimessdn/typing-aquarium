@@ -397,7 +397,7 @@ document.body.addEventListener("keydown", (event) => {
     } else if (event.key === "Escape") {
         pauseGame();
     } else if (event.key === "?") {
-        gameHelper.style.display = gameHelper.style.display !== "block" ? "none" : "block";
+        gameHelper.style.display = gameHelper.style.display !== "block" ? "block" : "none";
     } else if (event.key === "`") {
         if (!game.isPaused) {
             pauseGame();

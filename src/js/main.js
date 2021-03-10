@@ -316,7 +316,7 @@ document.body.addEventListener("keydown", (event) => {
         pauseGame();
     }
     else if (event.key === "?") {
-        gameHelper.style.display = gameHelper.style.display !== "block" ? "none" : "block";
+        gameHelper.style.display = gameHelper.style.display !== "block" ? "block" : "none";
     }
     else if (event.key === "`") {
         if (!game.isPaused) {
