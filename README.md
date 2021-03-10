@@ -13,7 +13,7 @@ Typing Aquarium is a petting simulation game by using keyboard. By typing, you c
 - TypeScript
 
 ## Snapshot
-![demo](src/img/demo/img1.gif)
+![demo](src/img/demo/fish1.gif)
 
 ## Give feedback
 Feedbacks are open to improve Typing Aquarium better by <a href="https://forms.gle/U7JF7tA9QbrA5Mjy6" target="_blank">clicking this</a>.
