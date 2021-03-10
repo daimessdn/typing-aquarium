@@ -157,7 +157,9 @@ class Fish {
         // change CSS properties of fish element
         this.htmlFish.style.cssText = `
             position: relative; left: ${this.x}px;
-                                top: ${this.y}px;`;
+                                top: ${this.y}px;
+                                transition: all 8s ease,
+                                            transform .3s ease`;
         // rotate fish turn left or turn right depends on position
         this.htmlFish.children[0].style.transform = previousPosition.x < this.x ?
             "rotateY(0deg)" : "rotateY(180deg)";
@@ -193,13 +195,15 @@ function makeid() {
 }
 // trigger fish movement continuously
 let movementTime = Math.floor(Math.random() * 10000);
-const triggerFishMovement = setInterval(function () {
+const triggerFishMovement = () => {
     game.fish.forEach(fishItem => {
         fishItem.moveFishInAquarium();
-        console.log(fishItem.x, fishItem.y);
     });
     movementTime = Math.floor(Math.random() * 10000);
-}, movementTime);
+    console.log(movementTime);
+    setTimeout(triggerFishMovement, movementTime);
+};
+triggerFishMovement();
 // trigger hunger countdown
 const triggerCountdown = setInterval(function () {
     // fish hunger timer will be updated
