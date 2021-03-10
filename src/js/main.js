@@ -297,36 +297,10 @@ document.body.addEventListener("keydown", (event) => {
         }
     }
     else if (event.key === "2") {
-        if (game.isPaused === false) {
-            // in case of you still have fish
-            if (game.fish.length > 0) {
-                if (game.cash >= 1000 && !fishTanks.includes("aquarium2")) {
-                    // if your money is enought and you can afford the background
-                    fishTanks.push("aquarium2");
-                    tankAddedSound.play();
-                    triggerNotification("Congratulations! You've bought a new background! Your fish must be love it.", "");
-                    aquariumIteration += 1;
-                    aquarium.style.backgroundImage = `linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.2)),
-                                                    url("src/img/aquariums/${fishTanks[aquariumIteration % fishTanks.length]}.svg")`;
-                    game.cash -= 1000;
-                    game.updateStats();
-                }
-                else if (fishTanks.includes("aquarium2")) {
-                    // in case you already ahve a background
-                    triggerNotification("You have already bought a background!", "");
-                }
-                else {
-                    // your money is not enough
-                    triggerNotification("Your money is not enough to buy a background!", "");
-                }
-            }
-            else {
-                triggerNotification("Your game is already over. You cannot buy a background anymore.", "All your fish are died. Please reload (Ctrl + R) to restart game.");
-            }
-        }
-        else {
-            triggerNotification("You cannot buy a background in paused mode!", "Game paused");
-        }
+        buyBackground("aquarium2", 1000);
+    }
+    else if (event.key === "3") {
+        buyBackground("aquarium3", 2000);
     }
     else if (event.key === "0") {
         // switch background
@@ -364,4 +338,35 @@ function pauseGame() {
     // console.log("game pause/not paused.");
     feedInput.disabled = game.isPaused ? true : false;
     gameNotification.textContent = game.isPaused ? "Game paused" : "";
+}
+function buyBackground(background, price) {
+    if (game.isPaused === false) {
+        // in case of you still have fish
+        if (game.fish.length > 0) {
+            if (game.cash >= 1000 && !fishTanks.includes(background)) {
+                // if your money is enought and you can afford the background
+                fishTanks.push(background);
+                tankAddedSound.play();
+                triggerNotification("Congratulations! You've bought a new background! Your fish must be love it.", "");
+                aquarium.style.backgroundImage = `linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.2)),
+                                                url("src/img/aquariums/${background}.svg")`;
+                game.cash -= price;
+                game.updateStats();
+            }
+            else if (fishTanks.includes(background)) {
+                // in case you already ahve a background
+                triggerNotification("You have already bought a background!", "");
+            }
+            else {
+                // your money is not enough
+                triggerNotification("Your money is not enough to buy a background!", "");
+            }
+        }
+        else {
+            triggerNotification("Your game is already over. You cannot buy a background anymore.", "All your fish are died. Please reload (Ctrl + R) to restart game.");
+        }
+    }
+    else {
+        triggerNotification("You cannot buy a background in paused mode!", "Game paused");
+    }
 }
