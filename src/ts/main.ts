@@ -359,7 +359,7 @@ feedInput.addEventListener("input", () => {
 //// buy fish, backgrounds, and also quit the game
 document.body.addEventListener("keydown", (event) => {
     setTimeout(() => {
-        feedInput.value = feedInput.value.replace(/[0-9]?/g, "").replace("`", "");
+        feedInput.value = feedInput.value.replace(/[0-9?`]/g, "");
     }, 10);
 
     // press 1 to buy the fish
