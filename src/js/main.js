@@ -53,6 +53,16 @@ if (!localStorage.getItem(GAMESTATS_LOCAL_KEY)) {
 }
 // other variables
 let fishTanks = JSON.parse(localStorage.getItem(TANKS_LOCAL_KEY)), aquariumIteration = 0;
+// generate ID
+const makeid = () => {
+    var result = '';
+    var characters = '0123456789abcdef';
+    var charactersLength = characters.length;
+    for (var i = 0; i < 15; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+};
 class Game {
     // define initial game stats
     //// starter will have level 1, 50 cash, and xp point 1
@@ -183,16 +193,6 @@ class Fish {
 //// and also update game state
 const game = new Game(JSON.parse(localStorage.getItem(GAMESTATS_LOCAL_KEY)));
 game.updateStats();
-// generate ID
-function makeid() {
-    var result = '';
-    var characters = '0123456789abcdef';
-    var charactersLength = characters.length;
-    for (var i = 0; i < 15; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-}
 // trigger fish movement continuously
 let movementTime = Math.floor(Math.random() * 10000);
 const triggerFishMovement = () => {
@@ -200,7 +200,6 @@ const triggerFishMovement = () => {
         fishItem.moveFishInAquarium();
     });
     movementTime = Math.floor(Math.random() * 10000);
-    console.log(movementTime);
     setTimeout(triggerFishMovement, movementTime);
 };
 triggerFishMovement();
@@ -276,29 +275,13 @@ feedInput.addEventListener("input", () => {
 // keyboard actions
 //// buy fish, backgrounds, and also quit the game
 document.body.addEventListener("keydown", (event) => {
+    setTimeout(() => {
+        feedInput.value = feedInput.value.replace(/[0-9]?/g, "").replace("`", "");
+    }, 10);
     // press 1 to buy the fish
     //// as long as the game is not paused
     if (event.key === "1") {
-        if (game.isPaused === false) {
-            if (game.fish.length > 0) {
-                if (game.cash >= 100) {
-                    game.fish.push(new Fish());
-                    fishAddedSound.play();
-                    triggerNotification("You bought a new fish. Take care of it.", "");
-                    game.cash -= 100;
-                    game.updateStats();
-                }
-                else {
-                    triggerNotification("Your money is not enough to buy a fish!", "");
-                }
-            }
-            else {
-                triggerNotification("Your game is already over. You cannot buy fish anymore.", "All your fish are died. Please reload (Ctrl + R) to restart game.");
-            }
-        }
-        else {
-            triggerNotification("You cannot buy a fish in paused mode!", "Game paused");
-        }
+        buyFish();
     }
     else if (event.key === "2") {
         buyBackground("aquarium2", 1000);
@@ -316,7 +299,7 @@ document.body.addEventListener("keydown", (event) => {
         pauseGame();
     }
     else if (event.key === "?") {
-        gameHelper.style.display = gameHelper.style.display !== "block" ? "block" : "none";
+        gameHelper.style.display = gameHelper.style.display !== "none" ? "none" : "block";
     }
     else if (event.key === "`") {
         if (!game.isPaused) {
@@ -324,32 +307,55 @@ document.body.addEventListener("keydown", (event) => {
         }
         window.open("https://forms.gle/U7JF7tA9QbrA5Mjy6", "_blank");
     }
-    document.body.click();
 });
 // trigger notification message
-function triggerNotification(text, finalText) {
+const triggerNotification = (text, finalText) => {
     gameNotification.textContent = text;
     setTimeout(() => { gameNotification.textContent = finalText; }, 5000);
-}
-window.onclick = () => {
-    if (document.activeElement !== feedInput) {
+};
+// pause game function
+const pauseGame = () => {
+    game.isPaused = game.isPaused ? false : true;
+    feedInput.disabled = game.isPaused ? true : false;
+    gameNotification.textContent = game.isPaused ? "Game paused" : "";
+    console.log("input disabled: " + feedInput.disabled);
+    if (feedInput.disabled) {
+        document.activeElement.blur();
+    }
+    else {
         feedInput.focus();
     }
 };
-// pause game function
-function pauseGame() {
-    game.isPaused = game.isPaused ? false : true;
-    // console.log("game pause/not paused.");
-    feedInput.disabled = game.isPaused ? true : false;
-    gameNotification.textContent = game.isPaused ? "Game paused" : "";
-}
-function buyBackground(background, price) {
+const buyFish = () => {
+    if (game.isPaused === false) {
+        if (game.fish.length > 0) {
+            if (game.cash >= 100) {
+                game.fish.push(new Fish());
+                fishAddedSound.play();
+                triggerNotification("You bought a new fish. Take care of it.", "");
+                game.cash -= 100;
+                game.updateStats();
+            }
+            else {
+                triggerNotification("Your money is not enough to buy a fish!", "");
+            }
+        }
+        else {
+            triggerNotification("Your game is already over. You cannot buy fish anymore.", "All your fish are died. Please reload (Ctrl + R) to restart game.");
+        }
+    }
+    else {
+        triggerNotification("You cannot buy a fish in paused mode!", "Game paused");
+    }
+};
+const buyBackground = (background, price) => {
     if (game.isPaused === false) {
         // in case of you still have fish
         if (game.fish.length > 0) {
             if (game.cash >= 1000 && !fishTanks.includes(background)) {
                 // if your money is enought and you can afford the background
                 fishTanks.push(background);
+                aquariumIteration = fishTanks.length - 1;
                 tankAddedSound.play();
                 triggerNotification("Congratulations! You've bought a new background! Your fish must be love it.", "");
                 aquarium.style.backgroundImage = `linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.2)),
@@ -373,4 +379,4 @@ function buyBackground(background, price) {
     else {
         triggerNotification("You cannot buy a background in paused mode!", "Game paused");
     }
-}
+};
