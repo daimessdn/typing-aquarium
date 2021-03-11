@@ -397,9 +397,7 @@ const triggerNotification = (text: string, finalText: string) => {
 };
 
 window.onclick = () => {
-    if (document.activeElement !== feedInput) {
-        feedInput.focus();
-    }
+    feedInput.focus()
 }
 
 // pause game function

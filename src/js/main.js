@@ -313,6 +313,9 @@ const triggerNotification = (text, finalText) => {
     gameNotification.textContent = text;
     setTimeout(() => { gameNotification.textContent = finalText; }, 5000);
 };
+window.onclick = () => {
+    feedInput.focus();
+};
 // pause game function
 const pauseGame = () => {
     game.isPaused = game.isPaused ? false : true;
