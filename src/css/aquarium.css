@@ -57,6 +57,13 @@ figure img {
     align-self: center;
     transform: rotateY(180deg);
     transition: transform .2s ease;
+
+    user-drag: none; 
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 
 figcaption {
