@@ -1,5 +1,7 @@
 # typing-aquarium
 
+<iframe src="https://itch.io/embed/967866" height="167" width="552" frameborder="0"><a href="https://daimessdn.itch.io/typing-aquarium">Typing Aquarium by daimessdn</a></iframe>
+
 ## Overview
 Typing Aquarium is a petting simulation game by using keyboard. By typing, you can feed the fish and get XP and cash points that you can use for buying more fish and exclusive aquarium backgrounds.
 
